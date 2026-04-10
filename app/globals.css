@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #F5F0E8; }
+::-webkit-scrollbar-thumb { background: #c8c2b9; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #722F37; }
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid #722F37;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(114, 47, 55, 0.12);
+  color: #1B2A4A;
+}
+
+/* Subtle grid for hero sections */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(245, 240, 232, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 240, 232, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Page top offset — accounts for 3px wine strip + 68px navbar = 71px */
+.pt-nav {
+  padding-top: 71px;
+}
