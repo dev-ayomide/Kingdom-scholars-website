@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -21,12 +22,18 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
+  const isHome = pathname === '/'
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    if (!isHome) {
+      setScrolled(true)
+      return
+    }
+    const check = () => setScrolled(window.scrollY > 40)
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    return () => window.removeEventListener('scroll', check)
+  }, [isHome])
 
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
@@ -82,20 +89,17 @@ export default function Navbar() {
           ].join(', '),
         }}
       >
-        {/* Logo — TODO: Replace text with real school logo image */}
         <Link
           href="/"
-          className="flex items-center gap-3 group shrink-0"
+          className="flex items-center gap-2.5 group shrink-0"
           aria-label="Kingdom Scholars Private School — Home"
         >
-          <div className="flex flex-col leading-none">
-            <span className="font-display italic font-bold text-white text-[1.05rem] tracking-tight group-hover:text-cream/90 transition-colors duration-200">
-              Kingdom Scholars
-            </span>
-            <span className="text-white/30 text-[9px] tracking-[0.24em] uppercase font-medium mt-[3px]">
-              Private School · Abeokuta
-            </span>
+          <div className="relative w-8 h-8 shrink-0 rounded-full overflow-hidden">
+            <Image src="/images/logo.jpg" alt="" fill className="object-cover" />
           </div>
+          <span className="font-display italic font-bold text-white text-[1.05rem] tracking-tight group-hover:text-cream/90 transition-colors duration-200">
+            Kingdom Scholars
+          </span>
         </Link>
 
         {/* Desktop nav */}
