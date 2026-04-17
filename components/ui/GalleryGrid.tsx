@@ -4,10 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// TODO: Replace with actual Cloudinary image URLs when real gallery photos are available.
-// Format: { src: 'https://res.cloudinary.com/...', alt: '...', category: 'events' | 'classrooms' | 'activities' }
-
-type Category = 'all' | 'events' | 'classrooms' | 'activities'
+type Category = 'all' | 'events' | 'activities' | 'professional-day'
 
 interface GalleryImage {
   id: number
@@ -17,25 +14,26 @@ interface GalleryImage {
 }
 
 const images: GalleryImage[] = [
-  { id: 1,  src: 'https://picsum.photos/seed/ksps1/800/600',  alt: 'School event',        category: 'events'      },
-  { id: 2,  src: 'https://picsum.photos/seed/ksps2/600/800',  alt: 'Classroom activity',  category: 'classrooms'  },
-  { id: 3,  src: 'https://picsum.photos/seed/ksps3/800/600',  alt: 'Learner activities',  category: 'activities'  },
-  { id: 4,  src: 'https://picsum.photos/seed/ksps4/800/600',  alt: 'School event',        category: 'events'      },
-  { id: 5,  src: 'https://picsum.photos/seed/ksps5/600/800',  alt: 'Classroom session',   category: 'classrooms'  },
-  { id: 6,  src: 'https://picsum.photos/seed/ksps6/800/600',  alt: 'Outdoor activities',  category: 'activities'  },
-  { id: 7,  src: 'https://picsum.photos/seed/ksps7/800/600',  alt: 'Prize giving',        category: 'events'      },
-  { id: 8,  src: 'https://picsum.photos/seed/ksps8/800/600',  alt: 'Learning time',       category: 'classrooms'  },
-  { id: 9,  src: 'https://picsum.photos/seed/ksps9/600/800',  alt: 'Sports day',          category: 'activities'  },
-  { id: 10, src: 'https://picsum.photos/seed/ksps10/800/600', alt: 'Graduation',          category: 'events'      },
-  { id: 11, src: 'https://picsum.photos/seed/ksps11/800/600', alt: 'Nursery class',       category: 'classrooms'  },
-  { id: 12, src: 'https://picsum.photos/seed/ksps12/800/600', alt: 'Group activities',    category: 'activities'  },
+  { id: 1,  src: '/images/gallery/graduation-ceremony.jpg',    alt: 'KSPS Graduation Ceremony — learners in gowns',        category: 'events'           },
+  { id: 2,  src: '/images/gallery/childrens-day.jpg',          alt: "Children's Day celebration with students and staff",          category: 'events'           },
+  { id: 3,  src: '/images/gallery/prize-giving-day.jpg',       alt: 'Prize Giving Day — teachers presenting awards to learners',   category: 'events'           },
+  { id: 4,  src: '/images/gallery/students-performing.jpg',    alt: 'Students performing at the KSPS Prize Giving ceremony',       category: 'events'           },
+  { id: 5,  src: '/images/gallery/graduation-gowning.jpg',     alt: 'Teachers proudly gowning graduates on stage',                 category: 'events'           },
+  { id: 6,  src: '/images/gallery/sports-day-yellow.jpg',      alt: 'Sports Day — Yellow team marching with flag',                 category: 'activities'       },
+  { id: 7,  src: '/images/gallery/sports-day-blue.jpg',        alt: 'Sports Day — Blue team marching in formation',                category: 'activities'       },
+  { id: 8,  src: '/images/gallery/sports-day-green.jpg',       alt: 'Sports Day — Green team ready to compete',                   category: 'activities'       },
+  { id: 9,  src: '/images/gallery/fun-day-slide.jpg',          alt: 'Fun Day — learners enjoying the inflatable slide',            category: 'activities'       },
+  { id: 10, src: '/images/gallery/school-outing.jpg',          alt: 'School outing — learners on a guided field trip',             category: 'activities'       },
+  { id: 11, src: '/images/gallery/professional-day-banner.jpg',alt: 'Professional Day — learners in white coats at KSPS banner',  category: 'professional-day' },
+  { id: 12, src: '/images/gallery/professional-day-doctors.jpg',alt: 'Professional Day — students dressed as doctor and nurse',   category: 'professional-day' },
+  { id: 13, src: '/images/gallery/professional-day-group.jpg', alt: 'Professional Day — students dressed in various professions', category: 'professional-day' },
 ]
 
 const tabs: { label: string; value: Category }[] = [
-  { label: 'All',         value: 'all'        },
-  { label: 'Events',      value: 'events'     },
-  { label: 'Classrooms',  value: 'classrooms' },
-  { label: 'Activities',  value: 'activities' },
+  { label: 'All',             value: 'all'             },
+  { label: 'Events',          value: 'events'          },
+  { label: 'Activities',      value: 'activities'      },
+  { label: 'Professional Day',value: 'professional-day'},
 ]
 
 export default function GalleryGrid() {
@@ -81,12 +79,15 @@ export default function GalleryGrid() {
                   src={img.src}
                   alt={img.alt}
                   width={800}
-                  height={600}
+                  height={1000}
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-navy/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Hover overlay with caption */}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/75 via-navy/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <p className="text-white text-xs font-medium leading-snug line-clamp-2">{img.alt}</p>
+                </div>
               </div>
             </motion.div>
           ))}

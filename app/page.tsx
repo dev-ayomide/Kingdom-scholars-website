@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import NewsCard from '@/components/ui/NewsCard'
 import SectionHeading from '@/components/ui/SectionHeading'
@@ -25,6 +26,16 @@ const stats = [
   { value: 'Abeokuta', label: 'Ogun State' },
 ]
 
+const marqueeItems = [
+  'Government Approved',
+  'Dual Curriculum',
+  'Est. 2015',
+  'Crèche to Primary 6',
+  'Abeokuta, Ogun State',
+  '1 : 15 Staff Ratio',
+  'Faith-Based',
+]
+
 const features = [
   {
     num: '01',
@@ -47,85 +58,149 @@ export default function HomePage() {
   return (
     <>
       {/* ═══════════════════════════════════════════
-          HERO — typographic-first, full height
+          HERO — full-screen image background
       ═══════════════════════════════════════════ */}
-      <section className="relative bg-navy flex flex-col overflow-hidden hero-grid pt-nav">
-        {/* Very subtle diagonal rule */}
-        <div
-          className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/[0.07] to-transparent"
-          aria-hidden
+      <section className="relative min-h-screen flex flex-col overflow-hidden bg-navy">
+
+        {/* Real school photo background */}
+        <Image
+          src="/images/hero/hero-main.jpg"
+          alt=""
+          fill
+          className="object-cover object-top"
+          priority
+          quality={85}
         />
 
-        {/* Main content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 w-full">
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate="show"
-            className="max-w-3xl"
-          >
-            {/* Label */}
-            <motion.div variants={item} className="flex items-center gap-3 mb-6">
-              <div className="w-7 h-[1.5px] bg-wine shrink-0" aria-hidden />
-              <span className="text-wine text-[11px] tracking-[0.25em] uppercase font-medium">
-                Government-Approved · Est. 2015
-              </span>
-            </motion.div>
+        {/* Directional overlay — dense on left for text, opens on right to show photo */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, rgba(27,42,74,0.93) 0%, rgba(27,42,74,0.85) 35%, rgba(27,42,74,0.62) 65%, rgba(27,42,74,0.48) 100%)',
+            zIndex: 1,
+          }}
+        />
+        {/* Bottom fade — keeps stats strip readable regardless of photo content */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, rgba(27,42,74,0.75) 0%, transparent 100%)', zIndex: 1 }}
+        />
 
-            {/* Heading — Playfair Display, italic on key word */}
-            <motion.h1
-              variants={item}
-              className="font-display font-bold text-white leading-[1.0] tracking-tight mb-6"
-              style={{ fontSize: 'clamp(2.5rem, 5.5vw, 5rem)' }}
-            >
-              Raising World{' '}
-              <em className="italic text-cream/75 not-italic" style={{ fontStyle: 'italic' }}>
-                Leaders
-              </em>
-              <br />
-              from the Start.
-            </motion.h1>
+        {/* Masked grid — sits on top of photo */}
+        <div aria-hidden className="absolute inset-0 hero-grid-masked pointer-events-none" style={{ zIndex: 2 }} />
 
-            {/* Wine rule */}
+        {/* Ambient orb — wine, top-center */}
+        <div
+          aria-hidden
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[420px] rounded-full blur-[120px] pointer-events-none"
+          style={{ zIndex: 2, background: 'rgba(114, 47, 55, 0.12)' }}
+        />
+
+        {/* Ambient orb — cream, top-right */}
+        <div
+          aria-hidden
+          className="absolute top-[-80px] right-[-120px] w-[480px] h-[380px] rounded-full blur-[140px] pointer-events-none"
+          style={{ zIndex: 2, background: 'rgba(245, 240, 232, 0.05)' }}
+        />
+
+        {/* Main content — padding-top clears the navbar */}
+        <div className="relative z-10 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center">
+          <div className="pt-[90px] pb-16 md:pt-[110px] md:pb-20 w-full">
             <motion.div
-              variants={item}
-              className="w-14 h-[2px] bg-wine mb-6"
-              aria-hidden
-            />
-
-            {/* Subtext */}
-            <motion.p
-              variants={item}
-              className="text-cream/55 text-base md:text-lg leading-relaxed mb-8 max-w-lg"
+              variants={stagger}
+              initial="hidden"
+              animate="show"
+              className="max-w-3xl"
             >
-              A government-approved Nursery &amp; Primary School in Abeokuta,
-              nurturing future leaders with excellence, faith, and purpose.
-            </motion.p>
+              {/* Badge pill */}
+              <motion.div variants={item} className="flex items-center mb-8">
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.06] backdrop-blur-sm px-4 py-1.5">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-wine opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-wine" />
+                  </span>
+                  <span className="text-cream/70 text-[11px] tracking-[0.22em] uppercase font-medium">
+                    Government-Approved · Est. 2015
+                  </span>
+                </div>
+              </motion.div>
 
-            {/* CTAs */}
-            <motion.div variants={item} className="flex flex-wrap gap-3">
-              <Link
-                href="/admissions"
-                className="bg-wine text-white px-7 py-3 font-semibold text-sm rounded hover:bg-wine/90 shadow-wine-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              {/* Heading with gradient on "Leaders" */}
+              <motion.h1
+                variants={item}
+                className="font-display font-bold text-white leading-[1.0] tracking-tight mb-6"
+                style={{ fontSize: 'clamp(2.5rem, 5.5vw, 5rem)' }}
               >
-                Apply for Admission
-              </Link>
-              <Link
-                href="/about"
-                className="border border-white/20 text-white/80 px-7 py-3 font-semibold text-sm rounded hover:border-white/40 hover:text-white hover:bg-white/5 transition-all duration-200 active:scale-[0.98]"
+                Raising World{' '}
+                <em
+                  className="not-italic bg-clip-text text-transparent"
+                  style={{ backgroundImage: 'linear-gradient(135deg, #F5F0E8 0%, #E8C5CA 45%, #722F37 100%)' }}
+                >
+                  Leaders
+                </em>
+                <br />
+                from the Start.
+              </motion.h1>
+
+              {/* Wine rule */}
+              <motion.div variants={item} className="w-14 h-[2px] bg-wine mb-6" aria-hidden />
+
+              {/* Subtext */}
+              <motion.p
+                variants={item}
+                className="text-cream/55 text-base md:text-lg leading-relaxed mb-8 max-w-lg"
               >
-                Our Story
-              </Link>
+                A government-approved Nursery &amp; Primary School in Abeokuta,
+                nurturing future leaders with excellence, faith, and purpose.
+              </motion.p>
+
+              {/* CTAs — pill-shaped */}
+              <motion.div variants={item} className="flex flex-wrap gap-3">
+                <Link
+                  href="/admissions"
+                  className="inline-flex items-center bg-wine text-white px-7 py-3 font-semibold text-sm rounded-full hover:bg-wine/90 shadow-wine-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Apply for Admission
+                </Link>
+                <Link
+                  href="/about"
+                  className="inline-flex items-center border border-white/20 text-white/85 px-7 py-3 font-semibold text-sm rounded-full backdrop-blur-sm bg-white/[0.04] hover:border-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200 active:scale-[0.98]"
+                >
+                  Our Story
+                </Link>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Stats strip — pinned to the bottom of the hero */}
+        {/* Marquee strip */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="relative z-10 border-t border-white/[0.07] overflow-hidden py-3"
+        >
+          <div className="flex animate-marquee whitespace-nowrap">
+            {[...marqueeItems, ...marqueeItems].map((label, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-3 px-6 text-[10px] font-medium uppercase tracking-[0.22em] text-cream/25"
+              >
+                {label}
+                <span aria-hidden className="w-[3px] h-[3px] rounded-full bg-wine/50 shrink-0" />
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Stats strip */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.6 }}
-          className="border-t border-white/[0.09]"
+          className="relative z-10 border-t border-white/[0.09]"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.09]">
@@ -211,14 +286,14 @@ export default function HomePage() {
               </p>
               <Link
                 href="/about"
-                className="inline-flex items-center gap-2 bg-navy text-white px-7 py-3.5 font-semibold text-sm rounded hover:bg-navy/90 shadow-navy-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 bg-navy text-white px-7 py-3.5 font-semibold text-sm rounded-full hover:bg-navy/90 shadow-navy-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Read Our Full Story
                 <span className="text-cream/50" aria-hidden>→</span>
               </Link>
             </motion.div>
 
-            {/* Decorative panel */}
+            {/* School photo */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -226,20 +301,16 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.1, ease }}
               className="relative"
             >
-              {/* TODO: Replace this block with a real school photo:
-                  <Image src="/images/school.jpg" alt="School" fill className="object-cover" /> */}
-              <div className="aspect-[4/3] bg-navy rounded-2xl overflow-hidden relative">
-                <div
-                  className="absolute inset-0"
-                  style={{ background: 'linear-gradient(145deg, #1B2A4A 0%, #243761 55%, #722F37 100%)' }}
+              <div className="aspect-[3/4] rounded-2xl overflow-hidden relative">
+                <Image
+                  src="/images/about-panel.jpg"
+                  alt="KSPS learners on a school outing"
+                  fill
+                  className="object-cover object-[center_20%]"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                <div className="absolute inset-0 hero-grid opacity-30" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 gap-3">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={0.75} className="w-12 h-12 opacity-15" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase">School photo coming soon</p>
-                </div>
+                {/* Subtle navy tint */}
+                <div className="absolute inset-0 bg-navy/[0.08]" />
               </div>
 
               {/* Floating badge */}
@@ -298,7 +369,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/admissions"
-              className="inline-flex items-center gap-2 bg-wine text-white px-8 py-4 font-semibold text-sm rounded hover:bg-wine/90 shadow-wine-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 bg-wine text-white px-8 py-4 font-semibold text-sm rounded-full hover:bg-wine/90 shadow-wine-glow transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               Give Your Child This Future
               <span aria-hidden>→</span>

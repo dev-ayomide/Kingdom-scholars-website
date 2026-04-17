@@ -22,9 +22,14 @@ const config: Config = {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.06)' },
         },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to:   { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         breathe: 'breathe 4s ease-in-out infinite',
+        marquee: 'marquee 35s linear infinite',
       },
       boxShadow: {
         'wine-glow': '0 4px 20px -4px rgba(114, 47, 55, 0.4)',

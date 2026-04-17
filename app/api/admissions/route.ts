@@ -15,10 +15,9 @@ export async function POST(req: Request) {
       questions,
     } = body
 
-    // TODO: Replace 'school@example.com' with the real school email address
     const { error } = await resend.emails.send({
-      from: 'KSPS Website <admissions@yourdomain.com>', // TODO: Replace with your verified Resend sender domain
-      to: ['school@example.com'],
+      from: 'KSPS Admissions <onboarding@resend.dev>',
+      to: ['info@kingdomscholars.com.ng'],
       reply_to: email,
       subject: 'New Admission Enquiry — KSPS',
       html: `

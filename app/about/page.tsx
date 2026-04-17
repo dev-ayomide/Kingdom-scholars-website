@@ -26,7 +26,7 @@ export default function AboutPage() {
             className="font-display italic font-bold text-white opacity-[0.04] leading-none whitespace-nowrap"
             style={{ fontSize: 'clamp(6rem, 18vw, 18rem)', writingMode: 'horizontal-tb' }}
           >
-            About
+            
           </span>
         </div>
 
@@ -117,7 +117,7 @@ export default function AboutPage() {
               </div>
               <div className="relative z-10">
                 <span className="text-white/30 text-[10px] tracking-[0.25em] uppercase font-medium block mb-6">Our Vision</span>
-                <p className="font-display font-bold text-white text-2xl md:text-3xl leading-snug tracking-tight">
+                <p className="font-display font-semibold text-white text-2xl md:text-3xl leading-snug tracking-tight">
                   To educate world leaders for global impact.
                 </p>
               </div>
@@ -137,7 +137,7 @@ export default function AboutPage() {
               </div>
               <div className="relative z-10">
                 <span className="text-white/40 text-[10px] tracking-[0.25em] uppercase font-medium block mb-6">Our Mission</span>
-                <p className="font-semibold text-white text-base md:text-lg leading-relaxed">
+                <p className="font-display font-semibold text-white text-base md:text-lg leading-relaxed">
                   To use the Nigerian and British government-approved curricula
                   with Biblical principles in educating future leaders with
                   global vision and impact, basing our approach on the

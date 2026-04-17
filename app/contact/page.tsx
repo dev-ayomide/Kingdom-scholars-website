@@ -37,9 +37,8 @@ const contactDetails = [
   },
   {
     label: 'Email',
-    // TODO: Replace with real school email address
-    value: 'school@example.com',
-    href: 'mailto:school@example.com',
+    value: 'info@kingdomscholars.com.ng',
+    href: 'mailto:info@kingdomscholars.com.ng',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -69,10 +68,18 @@ export default function ContactPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('loading')
-    // TODO: Wire to a real /api/contact route
-    await new Promise((res) => setTimeout(res, 1100))
-    setStatus('success')
-    setForm({ name: '', email: '', message: '' })
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error('Failed')
+      setStatus('success')
+      setForm({ name: '', email: '', message: '' })
+    } catch {
+      setStatus('error')
+    }
   }
 
   return (
