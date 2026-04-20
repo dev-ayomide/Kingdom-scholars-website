@@ -39,7 +39,7 @@ const marqueeItems = [
 const features = [
   {
     num: '01',
-    title: 'Low Student Ratio',
+    title: 'Teacher - Learner Ratio',
     body: 'Our 1:15 staff-to-learner ratio ensures every child receives personal attention and meaningful support.',
   },
   {
@@ -133,7 +133,7 @@ export default function HomePage() {
                 className="font-display font-bold text-white leading-[1.0] tracking-tight mb-6"
                 style={{ fontSize: 'clamp(2.5rem, 5.5vw, 5rem)' }}
               >
-                Raising World{' '}
+                Educating World{' '}
                 <em
                   className="not-italic bg-clip-text text-transparent"
                   style={{ backgroundImage: 'linear-gradient(135deg, #F5F0E8 0%, #E8C5CA 45%, #722F37 100%)' }}
@@ -281,7 +281,7 @@ export default function HomePage() {
                 Kingdom Scholars Private School began in 2015 as a single-room
                 crèche with one child. Today, we are a government-approved
                 institution educating learners from Crèche through Primary 6,
-                rooted in excellence, faith, and a commitment to raising leaders
+                rooted in excellence, faith, and a commitment to Educating leaders
                 of global impact.
               </p>
               <Link

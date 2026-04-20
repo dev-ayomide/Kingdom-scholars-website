@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const { error } = await resend.emails.send({
       from: 'KSPS Admissions <no-reply@kingdomscholars.com.ng>',
-      to: ['ayomidepaul784@gmail.com'],
+      to: ['kingdomscholars2@gmail.com'],
       reply_to: email,
       subject: 'New Admission Enquiry — KSPS',
       html: `

@@ -22,6 +22,7 @@ const images: GalleryImage[] = [
   { id: 6,  src: '/images/gallery/sports-day-yellow.jpg',      alt: 'Sports Day — Yellow team marching with flag',                 category: 'activities'       },
   { id: 7,  src: '/images/gallery/sports-day-blue.jpg',        alt: 'Sports Day — Blue team marching in formation',                category: 'activities'       },
   { id: 8,  src: '/images/gallery/sports-day-green.jpg',       alt: 'Sports Day — Green team ready to compete',                   category: 'activities'       },
+  { id: 14, src: '/images/gallery/sports-day-purple.jpeg',    alt: 'Sports Day — Purple team marching with pride',               category: 'activities'       },
   { id: 9,  src: '/images/gallery/fun-day-slide.jpg',          alt: 'Fun Day — learners enjoying the inflatable slide',            category: 'activities'       },
   { id: 10, src: '/images/gallery/school-outing.jpg',          alt: 'School outing — learners on a guided field trip',             category: 'activities'       },
   { id: 11, src: '/images/gallery/professional-day-banner.jpg',alt: 'Professional Day — learners in white coats at KSPS banner',  category: 'professional-day' },

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: '%s | Kingdom Scholars Private School',
   },
   description:
-    'A government-approved Nursery and Primary School in Abeokuta, Ogun State. Raising world leaders from the start.',
+    'A government-approved Nursery and Primary School in Abeokuta, Ogun State. Educating world leaders from the start.',
   keywords: [
     'Kingdom Scholars Private School',
     'private school Abeokuta',
@@ -50,9 +50,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
 
         {/* Floating WhatsApp button */}
-        {/* TODO: Replace 234XXXXXXXXXX with the real school WhatsApp number, e.g. 2348012345678 */}
         <a
-          href="https://wa.me/234XXXXXXXXXX"
+          href="https://wa.me/2348098134080"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat with us on WhatsApp"

@@ -161,9 +161,50 @@ export default function AdmissionsPage() {
                       <label htmlFor="numberOfChildren" className={labelClass}>
                         No. of Children <span className="text-wine">*</span>
                       </label>
-                      <input id="numberOfChildren" name="numberOfChildren" type="number"
-                        min={1} max={10} required value={form.numberOfChildren}
-                        onChange={handleChange} className={inputClass} />
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setForm(p => ({ ...p, numberOfChildren: Math.max(1, p.numberOfChildren - 1) }))}
+                          className="w-12 h-12 rounded-lg border border-navy/15 flex items-center justify-center text-navy/60 hover:border-wine/40 hover:text-wine transition-all"
+                          aria-label="Decrease number of children"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-5 h-5"><path d="M18 12H6" /></svg>
+                        </button>
+                        
+                        <div className="flex-1 relative">
+                          <input 
+                            id="numberOfChildren" 
+                            name="numberOfChildren" 
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            required 
+                            value={form.numberOfChildren}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, '')
+                              if (val === '') {
+                                setForm(p => ({ ...p, numberOfChildren: 0 }))
+                              } else {
+                                const n = parseInt(val, 10)
+                                if (n <= 10) setForm(p => ({ ...p, numberOfChildren: n }))
+                              }
+                            }}
+                            onBlur={() => {
+                              if (form.numberOfChildren < 1) setForm(p => ({ ...p, numberOfChildren: 1 }))
+                            }}
+                            className={`${inputClass} text-center font-bold text-base`} 
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setForm(p => ({ ...p, numberOfChildren: Math.min(10, p.numberOfChildren + 1) }))}
+                          className="w-12 h-12 rounded-lg border border-navy/15 flex items-center justify-center text-navy/60 hover:border-wine/40 hover:text-wine transition-all"
+                          aria-label="Increase number of children"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-5 h-5"><path d="M12 6v12m6-6H6" /></svg>
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label htmlFor="classApplyingFor" className={labelClass}>

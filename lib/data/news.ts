@@ -16,7 +16,7 @@ This term, we will be introducing our new reading programme for lower primary cl
 
 We look forward to partnering with every family to make this term exceptional. Remember, the KSPS team is always available to answer your questions — don't hesitate to reach out.
 
-Raising World Leaders from the Start.`,
+Educating World Leaders from the Start.`,
   },
   {
     slug: 'learners-excel-common-entrance',

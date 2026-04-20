@@ -50,7 +50,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-cream/80 font-semibold text-sm mb-2">
-              Raising World Leaders from the Start
+              Educating World Leaders from the Start
             </p>
             <p className="text-cream/45 text-sm leading-relaxed mb-8 max-w-xs">
               A government-approved Nursery and Primary School in Abeokuta,
@@ -59,17 +59,19 @@ export default function Footer() {
 
             {/* Social icons */}
             <div className="flex gap-2">
-              {/* TODO: Replace # with real Facebook page URL */}
               <a
-                href="#"
+                href="https://www.facebook.com/share/1b6t9VHbtF/"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="Follow KSPS on Facebook"
                 className="w-8 h-8 rounded-full bg-white/[0.07] border border-white/10 flex items-center justify-center text-cream/50 hover:bg-wine hover:text-white hover:border-wine transition-all duration-200"
               >
                 <FacebookIcon />
               </a>
-              {/* TODO: Replace # with real Instagram page URL */}
               <a
-                href="#"
+                href="https://www.instagram.com/kingdomscholarsps?igsh=cWxvNWJ0Z3EycThi"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="Follow KSPS on Instagram"
                 className="w-8 h-8 rounded-full bg-white/[0.07] border border-white/10 flex items-center justify-center text-cream/50 hover:bg-wine hover:text-white hover:border-wine transition-all duration-200"
               >
@@ -104,26 +106,28 @@ export default function Footer() {
             </h3>
             <ul className="space-y-4 text-sm">
               <li>
-                {/* TODO: Replace with full school address when available */}
                 <span className="text-cream/35 text-[10px] uppercase tracking-wider block mb-0.5">Address</span>
                 <span className="text-cream/65 leading-relaxed">
-                  Kingdom Scholars Private School,
+                  Plot 11, Block 12, Soetan Street,
                   <br />
-                  Abeokuta, Ogun State, Nigeria.
+                  Asero Estate, Abeokuta, Ogun State.
                 </span>
               </li>
               <li>
                 <span className="text-cream/35 text-[10px] uppercase tracking-wider block mb-0.5">Phone</span>
-                {/* TODO: Replace with real school phone number */}
-                <a href="tel:+234000000000" className="text-cream/65 hover:text-white transition-colors">
-                  +234 000 000 0000
-                </a>
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+2348164889463" className="text-cream/65 hover:text-white transition-colors">
+                    0816 488 9463
+                  </a>
+                  <a href="tel:+2348055433787" className="text-cream/65 hover:text-white transition-colors">
+                    0805 543 3787
+                  </a>
+                </div>
               </li>
               <li>
                 <span className="text-cream/35 text-[10px] uppercase tracking-wider block mb-0.5">Email</span>
-                {/* TODO: Replace with real school email */}
-                <a href="mailto:school@example.com" className="text-cream/65 hover:text-white transition-colors">
-                  school@example.com
+                <a href="mailto:kingdomscholars2@gmail.com" className="text-cream/65 hover:text-white transition-colors">
+                  kingdomscholars2@gmail.com
                 </a>
               </li>
               <li>
