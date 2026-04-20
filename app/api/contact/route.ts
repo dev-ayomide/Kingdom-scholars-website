@@ -8,8 +8,8 @@ export async function POST(req: Request) {
     const { name, email, message } = body
 
     const { error } = await resend.emails.send({
-      from: 'KSPS Website <onboarding@resend.dev>',
-      to: ['info@kingdomscholars.com.ng'],
+      from: 'KSPS Admissions <no-reply@kingdomscholars.com.ng>',
+      to: ['ayomidepaul784@gmail.com'],
       reply_to: email,
       subject: `New Message from ${name} — KSPS Website`,
       html: `
