@@ -27,3 +27,11 @@ export interface ContactFormData {
   email: string
   message: string
 }
+
+export interface PaymentInquiryFormData {
+  parentName: string
+  email: string
+  phone: string
+  classInterestedIn: string
+  message: string
+}
