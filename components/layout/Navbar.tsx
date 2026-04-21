@@ -97,7 +97,7 @@ export default function Navbar() {
           <div className="relative w-8 h-8 shrink-0 rounded-full overflow-hidden">
             <Image src="/images/logo.jpg" alt="" fill className="object-cover" />
           </div>
-          <span className="font-display italic font-bold text-white text-[1.05rem] tracking-tight group-hover:text-cream/90 transition-colors duration-200">
+          <span className="font-display font-bold text-white text-[1.05rem] tracking-tight group-hover:text-cream/90 transition-colors duration-200">
             KSPS
           </span>
         </Link>
