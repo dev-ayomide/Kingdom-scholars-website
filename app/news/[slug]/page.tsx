@@ -57,7 +57,7 @@ export default function NewsPostPage({ params }: Props) {
             {paragraphs.map((para, i) => (
               <p
                 key={i}
-                className="text-navy/75 text-base md:text-lg leading-relaxed mb-5"
+                className="text-navy/75 text-base md:text-lg leading-relaxed mb-5 whitespace-pre-line"
               >
                 {para}
               </p>

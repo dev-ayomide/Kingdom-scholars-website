@@ -98,7 +98,7 @@ export default function Navbar() {
             <Image src="/images/logo.jpg" alt="" fill className="object-cover" />
           </div>
           <span className="font-display italic font-bold text-white text-[1.05rem] tracking-tight group-hover:text-cream/90 transition-colors duration-200">
-            Kingdom Scholars
+            KSPS
           </span>
         </Link>
 

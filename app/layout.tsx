@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: '%s | Kingdom Scholars Private School',
   },
   description:
-    'A government-approved Nursery and Primary School in Abeokuta, Ogun State. Educating world leaders from the start.',
+    'A government-approved Nursery and Primary School in Abeokuta, Ogun State. Educating world leaders from the cradle.',
   keywords: [
     'Kingdom Scholars Private School',
     'private school Abeokuta',

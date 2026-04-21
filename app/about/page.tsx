@@ -38,8 +38,8 @@ export default function AboutPage() {
             className="max-w-2xl"
           >
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-7 h-[1.5px] bg-wine shrink-0" aria-hidden />
-              <span className="text-wine text-[11px] tracking-[0.25em] uppercase font-medium">
+              <div className="w-7 h-[1.5px] bg-cream/60 shrink-0" aria-hidden />
+              <span className="text-cream/60 text-[11px] tracking-[0.25em] uppercase font-medium">
                 Who We Are
               </span>
             </div>
@@ -48,7 +48,7 @@ export default function AboutPage() {
               style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}
             >
               About Kingdom{' '}
-              <em style={{ fontStyle: 'italic' }}>Scholars</em>
+              <em style={{ fontStyle: 'italic' }}>Scholars Private School</em>
             </h1>
             <p className="text-cream/50 text-lg max-w-md leading-relaxed">
               Faith, Excellence, and Purpose since 2015.
@@ -233,7 +233,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease }}
           >
-            <span className="text-wine text-[11px] tracking-[0.25em] uppercase font-medium block mb-5">
+            <span className="text-cream/60 text-[11px] tracking-[0.25em] uppercase font-medium block mb-5">
               Excellence in Action
             </span>
             <h2
@@ -243,7 +243,7 @@ export default function AboutPage() {
               Our Learners&apos;{' '}
               <em style={{ fontStyle: 'italic' }}>Achievements</em>
             </h2>
-            <div className="w-10 h-[2px] bg-wine mx-auto mb-8" aria-hidden />
+            <div className="w-10 h-[2px] bg-cream/60 mx-auto mb-8" aria-hidden />
             <p className="text-cream/60 text-base md:text-lg leading-relaxed">
               Our learners have successfully gained admissions into top secondary
               schools including{' '}

@@ -45,12 +45,12 @@ export default function Footer() {
               <span className="font-display font-black text-2xl text-white tracking-tight block">
                 KSPS
               </span>
-              <span className="text-wine text-[10px] font-semibold tracking-[0.22em] uppercase">
-                Kingdom Scholars
+              <span className="text-cream/60 text-[10px] font-semibold tracking-[0.22em] uppercase">
+                Kingdom Scholars Private School
               </span>
             </div>
             <p className="text-cream/80 font-semibold text-sm mb-2">
-              Educating World Leaders from the Start
+              Educating World Leaders from the Cradle
             </p>
             <p className="text-cream/45 text-sm leading-relaxed mb-8 max-w-xs">
               A government-approved Nursery and Primary School in Abeokuta,
@@ -141,7 +141,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/[0.07] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-cream/30 text-xs">
-            &copy; 2025 Kingdom Scholars Private School. All rights reserved.
+            &copy; 2026 Kingdom Scholars Private School. All rights reserved.
           </p>
           <p className="text-cream/20 text-xs tracking-wider">
             Abeokuta · Ogun State · Nigeria

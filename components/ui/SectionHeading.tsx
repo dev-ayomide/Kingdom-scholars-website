@@ -21,7 +21,7 @@ export default function SectionHeading({
         <div className={`flex items-center gap-3 mb-4 ${center ? 'justify-center' : ''}`}>
           {!center && (
             <div
-              className={`w-6 h-[1.5px] shrink-0 ${light ? 'bg-wine' : 'bg-wine'}`}
+              className={`w-6 h-[1.5px] shrink-0 ${light ? 'bg-cream/60' : 'bg-wine'}`}
               aria-hidden
             />
           )}

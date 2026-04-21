@@ -14,7 +14,7 @@ export default function NewsPage() {
       <PageHero
         label="From KSPS"
         title="News &amp; Updates"
-        subtitle="Stay up to date with what's happening at Kingdom Scholars."
+        subtitle="Stay up to date with what's happening at Kingdom Scholars Private School."
       />
       <section className="bg-cream py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

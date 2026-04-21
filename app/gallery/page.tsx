@@ -16,8 +16,8 @@ export default function GalleryPage() {
       <section className="bg-navy pt-nav relative overflow-hidden hero-grid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
           <div className="flex items-center gap-3 mb-7">
-            <div className="w-7 h-[1.5px] bg-wine shrink-0" aria-hidden />
-            <span className="text-wine text-[11px] tracking-[0.25em] uppercase font-medium">
+            <div className="w-7 h-[1.5px] bg-cream/60 shrink-0" aria-hidden />
+            <span className="text-cream/60 text-[11px] tracking-[0.25em] uppercase font-medium">
               Our School Life
             </span>
           </div>
@@ -29,7 +29,7 @@ export default function GalleryPage() {
             <em style={{ fontStyle: 'italic' }}>Gallery</em>
           </h1>
           <p className="text-cream/50 text-lg max-w-xs mt-3">
-            A glimpse into life at Kingdom Scholars.
+            A glimpse into life at Kingdom Scholars Private School.
           </p>
         </div>
       </section>

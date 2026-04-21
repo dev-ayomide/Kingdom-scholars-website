@@ -141,7 +141,7 @@ export default function HomePage() {
                   Leaders
                 </em>
                 <br />
-                from the Start.
+                from the Cradle.
               </motion.h1>
 
               {/* Wine rule */}
@@ -233,7 +233,7 @@ export default function HomePage() {
           >
             <SectionHeading
               label="Why KSPS"
-              title="Why Families Choose Kingdom Scholars"
+              title="Why Families Choose Kingdom Scholars Private School"
               subtitle="Every decision we make serves one purpose: to give each child the environment they need to flourish."
               size="lg"
             />
@@ -347,7 +347,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease }}
           >
-            <span className="text-wine text-[11px] tracking-[0.25em] uppercase font-medium block mb-5">
+            <span className="text-cream/60 text-[11px] tracking-[0.25em] uppercase font-medium block mb-5">
               Our Pride
             </span>
             <h2
@@ -393,14 +393,14 @@ export default function HomePage() {
             <SectionHeading label="From KSPS" title="Latest News &amp; Updates" size="lg" />
             <Link
               href="/news"
-              className="shrink-0 text-wine text-sm font-semibold hover:underline underline-offset-4 inline-flex items-center gap-1.5 pb-1"
+              className="shrink-0 text-cream/60 text-sm font-semibold hover:underline underline-offset-4 inline-flex items-center gap-1.5 pb-1"
             >
               View All <span aria-hidden>→</span>
             </Link>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {newsPosts.map((post, i) => (
+            {newsPosts.slice(0, 3).map((post, i) => (
               <NewsCard key={post.slug} post={post} index={i} />
             ))}
           </div>
