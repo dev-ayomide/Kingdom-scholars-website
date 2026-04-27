@@ -3,6 +3,17 @@ import type { NewsPost } from '@/lib/types'
 // TODO: Replace with real news posts from a CMS or database
 export const newsPosts: NewsPost[] = [
   {
+    slug: 'visit-to-olumo-rock-cultural-day',
+    title: 'Visit to Olumo Rock - Cultural Day',
+    date: 'February 25, 2026',
+    excerpt: 'Our learners experienced a wonderful Cultural Day outing with a visit to the historic Olumo Rock, celebrating our rich heritage.',
+    content: `Kingdom Scholars Private School recently organized a memorable Cultural Day outing for our learners, which included a visit to the historic Olumo Rock in Abeokuta.
+
+The excursion provided an excellent opportunity for our students to connect with their cultural roots, learn about local history, and appreciate the beautiful heritage of Ogun State. Learners and staff dressed in vibrant traditional attire, making the day colorful and festive.
+
+It was a beautiful blend of education and cultural appreciation, reinforcing our commitment to raising well-rounded global leaders who are also deeply connected to their origins.`,
+  },
+  {
     slug: 'first-ever-inter-house-sports',
     title: 'First-ever Inter-house Sports Competition',
     date: 'December 10, 2025',
@@ -45,7 +56,7 @@ Educating World Leaders from the Start.`,
       'We are overjoyed to announce that KSPS Primary 6 learners achieved outstanding results in the Common Entrance Examinations, with admissions secured at some of the most prestigious secondary schools in Ogun State.',
     content: `We are overjoyed to announce that KSPS Primary 6 learners achieved outstanding results in the Common Entrance Examinations.
 
-Our graduating class of 2025 secured admissions to top secondary schools including Navy Secondary School, Abeokuta Grammar School, Police College, and Baptist Boys Grammar School. These results reflect the dedication of our learners, the commitment of our teaching staff, and the invaluable support of KSPS families.
+Our graduating class of 2025 secured admissions to top secondary schools including Navy Secondary School, Abeokuta Grammar School, Police College, and Baptist Boys High School. These results reflect the dedication of our learners, the commitment of our teaching staff, and the invaluable support of KSPS families.
 
 At Kingdom Scholars Private School, we believe every child carries seeds of greatness. Our role is to water those seeds through a rigorous yet nurturing educational environment grounded in Biblical principles and world-class curricula.
 

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import NewsCard from '@/components/ui/NewsCard'
 import SectionHeading from '@/components/ui/SectionHeading'
+import Testimonials from '@/components/ui/Testimonials'
 import { newsPosts } from '@/lib/data/news'
 
 const ease = [0.25, 0.1, 0.25, 1]
@@ -365,7 +366,7 @@ export default function HomePage() {
                 Navy Secondary School, Abeokuta Grammar School, Police College,
               </span>{' '}
               and{' '}
-              <span className="text-white font-medium">Baptist Boys Grammar School.</span>
+              <span className="text-white font-medium">Baptist Boys High School.</span>
             </p>
             <Link
               href="/admissions"
@@ -377,6 +378,11 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════
+          TESTIMONIALS
+      ═══════════════════════════════════════════ */}
+      <Testimonials />
 
       {/* ═══════════════════════════════════════════
           LATEST NEWS

@@ -251,7 +251,7 @@ export default function AboutPage() {
                 Navy Secondary School, Abeokuta Grammar School, Police College,
               </span>{' '}
               and{' '}
-              <span className="font-semibold text-white/90">Baptist Boys Grammar School.</span>
+              <span className="font-semibold text-white/90">Baptist Boys High School.</span>
             </p>
           </motion.div>
         </div>

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
-type Category = 'all' | 'events' | 'activities' | 'professional-day'
+type Category = 'all' | 'events' | 'activities' | 'professional-day' | 'staff'
 
 interface GalleryImage {
   id: number
@@ -18,7 +18,7 @@ const images: GalleryImage[] = [
   { id: 2,  src: '/images/gallery/childrens-day.jpg',          alt: "Children's Day celebration with students and staff",          category: 'events'           },
   { id: 3,  src: '/images/gallery/prize-giving-day.jpg',       alt: 'Prize Giving Day — teachers presenting awards to learners',   category: 'events'           },
   { id: 4,  src: '/images/gallery/students-performing.jpg',    alt: 'Students performing at the KSPS Prize Giving ceremony',       category: 'events'           },
-  { id: 5,  src: '/images/gallery/graduation-gowning.jpg',     alt: 'Teachers proudly gowning graduates on stage',                 category: 'events'           },
+  { id: 5,  src: '/images/gallery/graduation-gowning.jpg',     alt: 'Parents proudly gowning graduates on stage',                 category: 'events'           },
   { id: 6,  src: '/images/gallery/sports-day-yellow.jpg',      alt: 'Sports Day — Yellow team marching with flag',                 category: 'activities'       },
   { id: 7,  src: '/images/gallery/sports-day-blue.jpg',        alt: 'Sports Day — Blue team marching in formation',                category: 'activities'       },
   { id: 8,  src: '/images/gallery/sports-day-green.jpg',       alt: 'Sports Day — Green team ready to compete',                   category: 'activities'       },
@@ -28,6 +28,17 @@ const images: GalleryImage[] = [
   { id: 11, src: '/images/gallery/professional-day-banner.jpg',alt: 'Professional Day — learners in white coats at KSPS banner',  category: 'professional-day' },
   { id: 12, src: '/images/gallery/professional-day-doctors.jpg',alt: 'Professional Day — students dressed as doctor and nurse',   category: 'professional-day' },
   { id: 13, src: '/images/gallery/professional-day-group.jpg', alt: 'Professional Day — students dressed in various professions', category: 'professional-day' },
+  { id: 15, src: '/images/gallery/at-olumo-rock.jpg',          alt: 'Visit to Olumo Rock',                                         category: 'events'           },
+  { id: 16, src: '/images/gallery/cultural-day.jpg',           alt: 'Cultural Day celebration in school',                          category: 'events'           },
+  { id: 17, src: '/images/gallery/cultural-day-olumo.jpg',     alt: 'Cultural Day outing at Olumo Rock',                           category: 'events'           },
+  { id: 18, src: '/images/gallery/cultural-day-1.jpg',         alt: 'Students during Cultural Day',                                category: 'events'           },
+  { id: 19, src: '/images/gallery/cultural-day-2.jpg',         alt: 'Cultural Day activities',                                     category: 'events'           },
+  { id: 20, src: '/images/gallery/cultural-day-3.jpg',         alt: 'Celebrating our heritage on Cultural Day',                    category: 'events'           },
+  { id: 21, src: '/images/gallery/cultural-day-4.jpg',         alt: 'Cultural Day celebration',                                    category: 'events'           },
+  { id: 22, src: '/images/gallery/cultural-day-5.jpg',         alt: 'Cultural Day event',                                          category: 'events'           },
+  { id: 23, src: '/images/team/staff-of-ksps.jpg',             alt: 'Staff of Kingdom Scholars Private School',                    category: 'staff'            },
+  { id: 24, src: '/images/team/staff-training-1.jpg',          alt: 'Staff training session',                                      category: 'staff'            },
+  { id: 25, src: '/images/team/staff-training-2.jpg',          alt: 'Teachers during staff training',                              category: 'staff'            },
 ]
 
 const tabs: { label: string; value: Category }[] = [
@@ -35,6 +46,7 @@ const tabs: { label: string; value: Category }[] = [
   { label: 'Events',          value: 'events'          },
   { label: 'Activities',      value: 'activities'      },
   { label: 'Professional Day',value: 'professional-day'},
+  { label: 'Staff',           value: 'staff'           },
 ]
 
 export default function GalleryGrid() {
