@@ -12,6 +12,7 @@ const navLinks = [
   { label: 'Admissions', href: '/admissions' },
   { label: 'Fees', href: '/fees' },
   { label: 'Gallery', href: '/gallery' },
+  { label: 'Testimonials', href: '/testimonials' },
   { label: 'News', href: '/news' },
   { label: 'Contact', href: '/contact' },
 ]

@@ -35,7 +35,7 @@ export const testimonials: Testimonial[] = [
   {
     id: 4,
     name: 'Mrs. Modupe Oladiran',
-    role: 'KSPS, PTA Chairperson',
+    role: 'KSPS, PTA Vice Chairperson',
     content: 'Wearing two hats, as a parent and as Vice Chairperson of the PTA, I can confidently say this school is outstanding. The staff’s commitment to academic excellence and character development is unmatched. My children are direct beneficiaries of the nurturing environment here. I am proud to partner with KSPS.',
     image: '/images/testimonials/Mrs. Oladiran.jpg',
     category: 'parent',
