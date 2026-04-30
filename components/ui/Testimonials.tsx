@@ -32,7 +32,7 @@ export default function Testimonials() {
             />
 
             <p className="text-navy/60 leading-relaxed mt-5 mb-8">
-              In this featured video, Anjola and Ebun Dosunmu share firsthand
+              In this featured video, Anjola and Ebun Dokunmu share firsthand
               how KSPS has nurtured their confidence, emotional intelligence,
               and academic growth, straight from the heart.
             </p>
@@ -49,7 +49,7 @@ export default function Testimonials() {
                 </svg>
               </div>
               <div>
-                <p className="text-navy font-semibold text-sm leading-tight">Anjola &amp; Ebun Dosunmu</p>
+                <p className="text-navy font-semibold text-sm leading-tight">Anjola &amp; Ebun Dokunmu</p>
                 <p className="text-navy/50 text-xs mt-0.5">KSPS Learners</p>
               </div>
             </div>

@@ -43,7 +43,7 @@ export default function TestimonialsPage() {
               Straight from the Hearts of Our Learners
             </h2>
             <p className="text-navy/55 leading-relaxed">
-              Watch Anjola and Ebun Dosunmu share their experience at Kingdom
+              Watch Anjola and Ebun Dokunmu share their experience at Kingdom
               Scholars Private School.
             </p>
           </motion.div>
@@ -88,7 +88,7 @@ export default function TestimonialsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-navy font-semibold text-sm leading-tight">Anjola &amp; Ebun Dosunmu</p>
+                  <p className="text-navy font-semibold text-sm leading-tight">Anjola &amp; Ebun Dokunmu</p>
                   <p className="text-navy/50 text-xs mt-0.5">KSPS Learners — Video Testimonial</p>
                 </div>
               </div>
@@ -198,11 +198,10 @@ function TestimonialsGrid() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-full text-sm font-semibold capitalize transition-all duration-300 ${
-                  activeTab === tab
+                className={`px-6 py-2 rounded-full text-sm font-semibold capitalize transition-all duration-300 ${activeTab === tab
                     ? 'bg-navy text-white shadow-md'
                     : 'text-navy/60 hover:text-navy'
-                }`}
+                  }`}
               >
                 {tab === 'all' ? 'All' : tab + 's'}
               </button>
