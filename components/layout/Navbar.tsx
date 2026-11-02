@@ -15,6 +15,7 @@ const navLinks = [
   { label: 'Testimonials', href: '/testimonials' },
   { label: 'News', href: '/news' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Portal', href: '/portal' },
 ]
 
 const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
