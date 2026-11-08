@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED = ['/portal', '/teacher', '/admin']
+const PROTECTED = ['/portal', '/teacher', '/admin', '/auth/set-password']
 
 // Refreshes the auth cookie and sends signed-out visitors to /login.
 // Role checks happen in the pages/actions (see lib/auth.ts), not here.
