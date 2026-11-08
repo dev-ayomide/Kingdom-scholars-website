@@ -6,6 +6,7 @@ import PortalFrame from '@/components/portal/PortalFrame'
 import ActionForm from '@/components/portal/ActionForm'
 import CsvImporter from '@/components/portal/CsvImporter'
 import ConfirmSubmit from '@/components/portal/ConfirmSubmit'
+import FilterTable from '@/components/portal/FilterTable'
 import { Container, Notice, PageHeader, Section, SelectField, SignedInMark, TextField } from '@/components/portal/kit'
 import { importParentRows, inviteAccount, linkParent, resendAllPending, resendInvite, unlinkParent } from '../actions'
 
@@ -37,14 +38,102 @@ export default async function ParentsPage() {
   return (
     <PortalFrame role={profile.role} name={profile.full_name}>
       <PageHeader
-        back={{ href: '/admin', label: 'Back to the contents' }}
-        kicker="Parents"
-        title="Parents and"
-        accent="welcome emails"
+        title="Parents"
         intro="Add each parent, connect them to their children, then send them a welcome email so they can choose a password and sign in."
       />
 
-      <Container className="py-12 md:py-16 space-y-20">
+      <Container className="py-8 space-y-8">
+        <Section id="list" title={`Parents and their children (${d.parents.length})`} hint="Type in the box to find a parent by name, email or child.">
+          <FilterTable
+            label="Search for a parent"
+            columns={['Parent', 'Email', 'Children', 'Sign-in']}
+            rows={d.parents.map((p) => {
+              const kids = d.parentStudents.filter((l) => l.parent_id === p.id)
+              const names = kids.map((l) => d.students.find((x) => x.id === l.student_id)?.full_name ?? '')
+              return {
+                key: p.id,
+                search: `${p.full_name} ${d.emailOf(p.id)} ${names.join(' ')}`.toLowerCase(),
+                cells: [
+                  <strong key="n">{titleCase(p.full_name)}</strong>,
+                  <span key="e" className="break-all">{d.emailOf(p.id)}</span>,
+                  <ul key="k" className="space-y-2">
+                    {kids.length === 0 && <li className="text-[#6B4A00] font-semibold">Not connected to a child yet</li>}
+                    {kids.map((l) => {
+                      const s = d.students.find((x) => x.id === l.student_id)
+                      return (
+                        <li key={l.student_id} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <span>{s ? `${titleCase(s.full_name)} (${className(s.class_id)})` : 'Unknown child'}</span>
+                          <form action={unlinkParent}>
+                            <input type="hidden" name="parentId" value={p.id} />
+                            <input type="hidden" name="studentId" value={l.student_id} />
+                            <ConfirmSubmit
+                              label="Disconnect"
+                              message={`Disconnect ${titleCase(p.full_name)} from ${titleCase(s?.full_name ?? 'this child')}? They will no longer see this child's report sheets.`}
+                            />
+                          </form>
+                        </li>
+                      )
+                    })}
+                  </ul>,
+                  <SignedInMark key="s" signedIn={d.signedIn(p.id)} />,
+                ],
+              }
+            })}
+            empty="No parents have been added yet."
+          />
+        </Section>
+
+        <Section
+          id="welcome"
+          title="Welcome emails"
+          hint="The welcome email has a button that lets a person choose their own password. Each person only needs it once."
+        >
+          {waiting.length === 0 ? (
+            <Notice tone="ok" lead="Everyone has signed in.">Nobody needs a welcome email.</Notice>
+          ) : (
+            <div className="space-y-6">
+              <Notice tone="warn" lead={`${waiting.length} ${waiting.length === 1 ? 'person has' : 'people have'} not signed in yet.`}>
+                Sending the emails cannot be taken back, and anyone who already had an older email will get a new one. The old link then stops working.
+              </Notice>
+              <ActionForm
+                action={resendAllPending}
+                submitLabel={`Send a welcome email to ${waiting.length} ${waiting.length === 1 ? 'person' : 'people'}`}
+                confirm={`This will send a welcome email to ${waiting.length} people right now. It cannot be taken back. Continue?`}
+              >
+                <span />
+              </ActionForm>
+
+              <details className="ks-panel group">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4">
+                  <span className="font-semibold text-[1.125rem]">See who has not signed in</span>
+                  <span className="ks-link group-open:hidden">Open</span>
+                  <span className="ks-link hidden group-open:inline">Close</span>
+                </summary>
+                <div className="border-t border-[#E3E7EC] overflow-x-auto">
+                  <table className="ks-table">
+                    <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col"><span className="sr-only">Action</span></th></tr></thead>
+                    <tbody>
+                      {waiting.map((p) => (
+                        <tr key={p.id}>
+                          <td><strong>{titleCase(p.full_name)}</strong></td>
+                          <td className="break-all">{d.emailOf(p.id)}</td>
+                          <td>{roleWord(p.role)}</td>
+                          <td>
+                            <form action={resendInvite}>
+                              <input type="hidden" name="profileId" value={p.id} />
+                              <button type="submit" className="ks-btn ks-btn-quiet ks-btn-small">Send again</button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+          )}
+        </Section>
+
         <Section
           id="spreadsheet"
           title="Add many parents from a spreadsheet"
@@ -66,7 +155,7 @@ export default async function ParentsPage() {
         <Section id="one" title="Add one parent">
           <ActionForm action={inviteAccount} submitLabel="Add this parent and send a welcome email">
             <input type="hidden" name="role" value="parent" />
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5">
               <TextField id="p-name" name="fullName" label="Parent's full name" />
               <TextField id="p-email" name="email" type="email" label="Email address" hint="Check the spelling. The welcome email goes here." />
             </div>
@@ -75,100 +164,11 @@ export default async function ParentsPage() {
 
         <Section id="connect" title="Connect a parent to a child" hint="Do this for each child. A child can have more than one parent, and a parent can have more than one child.">
           <ActionForm action={linkParent} submitLabel="Connect them">
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5">
               <SelectField id="l-parent" name="parentId" label="Which parent?" options={d.parents.map((p) => ({ value: p.id, label: titleCase(p.full_name) }))} />
               <SelectField id="l-child" name="studentId" label="Which child?" options={studentOptions} />
             </div>
           </ActionForm>
-        </Section>
-
-        <Section
-          id="welcome"
-          title="Welcome emails"
-          hint="The welcome email has a button that lets a person choose their own password. Each person only needs it once."
-        >
-          {waiting.length === 0 ? (
-            <Notice tone="ok" lead="Everyone has signed in.">Nobody needs a welcome email.</Notice>
-          ) : (
-            <div className="space-y-8">
-              <Notice tone="warn" lead={`${waiting.length} ${waiting.length === 1 ? 'person has' : 'people have'} not signed in yet.`}>
-                Sending the emails cannot be taken back, and anyone who already had an older email will get a new one. The old link then stops working.
-              </Notice>
-              <ActionForm
-                action={resendAllPending}
-                submitLabel={`Send a welcome email to ${waiting.length} ${waiting.length === 1 ? 'person' : 'people'}`}
-                confirm={`This will send a welcome email to ${waiting.length} people right now. It cannot be taken back. Continue?`}
-              >
-                <span />
-              </ActionForm>
-
-              <details className="ks-panel group">
-                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
-                  <span className="font-bold text-[1.35rem]">See who has not signed in</span>
-                  <span className="ks-link group-open:hidden">Open</span>
-                  <span className="ks-link hidden group-open:inline">Close</span>
-                </summary>
-                <ul className="border-t border-navy/15 divide-y divide-navy/10">
-                  {waiting.map((p) => (
-                    <li key={p.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 sm:px-6 py-4">
-                      <span className="min-w-0">
-                        <span className="block font-bold text-[1.2rem]">{titleCase(p.full_name)} <span className="font-normal text-navy/65">· {roleWord(p.role)}</span></span>
-                        <span className="block text-[1.1rem] text-navy/75 break-all">{d.emailOf(p.id)}</span>
-                      </span>
-                      <form action={resendInvite}>
-                        <input type="hidden" name="profileId" value={p.id} />
-                        <button type="submit" className="ks-btn ks-btn-quiet ks-btn-small">Send again</button>
-                      </form>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </div>
-          )}
-        </Section>
-
-        <Section id="list" title={`Parents and their children (${d.parents.length})`} hint="Open this list to check who is connected to whom.">
-          <details className="ks-panel group">
-            <summary className="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
-              <span className="font-bold text-[1.35rem]">Show the list</span>
-              <span className="ks-link group-open:hidden">Open</span>
-              <span className="ks-link hidden group-open:inline">Close</span>
-            </summary>
-            <ul className="border-t border-navy/15 divide-y divide-navy/10">
-              {d.parents.length === 0 && <li className="p-5 text-navy/70">No parents yet.</li>}
-              {d.parents.map((p) => {
-                const kids = d.parentStudents.filter((l) => l.parent_id === p.id)
-                return (
-                  <li key={p.id} className="px-5 sm:px-6 py-5">
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-6">
-                      <span className="font-bold text-[1.25rem]">{titleCase(p.full_name)}</span>
-                      <SignedInMark signedIn={d.signedIn(p.id)} />
-                    </div>
-                    <p className="text-[1.1rem] text-navy/75 break-all">{d.emailOf(p.id)}</p>
-                    <ul className="mt-3 space-y-2">
-                      {kids.length === 0 && <li className="text-[#6B4A00] font-bold">Not connected to a child yet</li>}
-                      {kids.map((l) => {
-                        const s = d.students.find((x) => x.id === l.student_id)
-                        return (
-                          <li key={l.student_id} className="flex flex-wrap items-center justify-between gap-3 text-[1.15rem]">
-                            <span>{s ? `${titleCase(s.full_name)} (${className(s.class_id)})` : 'Unknown child'}</span>
-                            <form action={unlinkParent}>
-                              <input type="hidden" name="parentId" value={p.id} />
-                              <input type="hidden" name="studentId" value={l.student_id} />
-                              <ConfirmSubmit
-                                label="Disconnect"
-                                message={`Disconnect ${titleCase(p.full_name)} from ${titleCase(s?.full_name ?? 'this child')}? They will no longer see this child's report sheets.`}
-                              />
-                            </form>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </li>
-                )
-              })}
-            </ul>
-          </details>
         </Section>
       </Container>
     </PortalFrame>

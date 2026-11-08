@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import LoginForm from './LoginForm'
 import { PlainFrame } from '@/components/portal/PortalFrame'
-import { Container, Notice } from '@/components/portal/kit'
+import { Notice } from '@/components/portal/kit'
 
 export const metadata: Metadata = {
   title: 'Sign in',
@@ -17,32 +17,25 @@ const ERRORS: Record<string, string> = {
 export default function LoginPage({ searchParams }: { searchParams: { next?: string; error?: string } }) {
   return (
     <PlainFrame>
-      <section className="ks-ruled min-h-[70vh]">
-        <Container className="py-12 md:py-20 grid md:grid-cols-[1fr_26rem] gap-10 md:gap-16 items-start">
-          <div className="ks-rise">
-            <p className="ks-kicker mb-3">Parents and staff</p>
-            <h1 className="font-bold leading-[1.05]" style={{ fontSize: 'clamp(2.6rem, 6vw, 4.25rem)' }}>
-              Welcome <em className="text-wine italic">back</em>
-            </h1>
-            <p className="mt-5 text-[1.3rem] leading-relaxed text-navy/85 max-w-md">
-              Sign in to see and download your child&apos;s report sheet. Your email address and password were
-              set up through the school office.
-            </p>
-            <p className="mt-6 ks-hint max-w-md">
-              This is the first time? Use the link in the welcome email from the school to choose a password.
-            </p>
-          </div>
-
-          <div className="ks-panel p-6 sm:p-8 shadow-[0_8px_30px_rgba(27,42,74,0.08)] ks-rise" style={{ animationDelay: '0.1s' }}>
+      <section className="py-10 md:py-16 px-5">
+        <div className="max-w-md mx-auto">
+          <h1 className="mb-2">Welcome back</h1>
+          <p className="ks-muted mb-6">
+            Sign in to see and download your child&apos;s report sheet. Your email address and password were set up through the school office.
+          </p>
+          <div className="ks-panel p-6 sm:p-7">
             {searchParams.error && ERRORS[searchParams.error] && (
-              <div className="mb-6"><Notice tone="bad">{ERRORS[searchParams.error]}</Notice></div>
+              <div className="mb-5"><Notice tone="bad">{ERRORS[searchParams.error]}</Notice></div>
             )}
             <LoginForm next={searchParams.next ?? ''} />
-            <p className="mt-6 pt-6 border-t border-navy/15">
+            <p className="mt-5 pt-5 border-t border-[#E3E7EC]">
               <Link href="/auth/forgot" className="ks-link">I forgot my password</Link>
             </p>
           </div>
-        </Container>
+          <p className="ks-hint mt-5">
+            First time here? Use the button in the welcome email from the school to choose a password.
+          </p>
+        </div>
       </section>
     </PlainFrame>
   )

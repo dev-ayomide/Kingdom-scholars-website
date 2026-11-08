@@ -108,9 +108,9 @@ export default function CsvImporter({
 
   return (
     <div className="space-y-8">
-      <ol className="space-y-5 text-[1.2rem]">
+      <ol className="space-y-5 text-[1.125rem]">
         <li className="flex gap-4">
-          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">1</span>
+          <span className="w-8 h-8 rounded-full bg-navy text-white font-bold flex items-center justify-center shrink-0 text-base">1</span>
           <div>
             <p>Fill in a spreadsheet with these columns: <strong>{columns}</strong>.</p>
             <a href={sampleHref} download={sampleName} className="ks-btn ks-btn-quiet ks-btn-small mt-3">
@@ -122,7 +122,7 @@ export default function CsvImporter({
           </div>
         </li>
         <li className="flex gap-4">
-          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">2</span>
+          <span className="w-8 h-8 rounded-full bg-navy text-white font-bold flex items-center justify-center shrink-0 text-base">2</span>
           <div className="flex-1">
             <p>Choose your saved file.</p>
             <input
@@ -137,11 +137,11 @@ export default function CsvImporter({
             <label htmlFor={`csv-${sampleName}`} className="ks-btn ks-btn-quiet mt-3 cursor-pointer">
               <UploadIcon className="w-6 h-6" /> {fileName ? 'Choose a different file' : 'Choose the file'}
             </label>
-            {fileName && <p className="mt-3 text-[1.15rem]">Chosen: <strong className="break-all">{fileName}</strong></p>}
+            {fileName && <p className="mt-3 text-[1.0625rem]">Chosen: <strong className="break-all">{fileName}</strong></p>}
           </div>
         </li>
         <li className="flex gap-4">
-          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">3</span>
+          <span className="w-8 h-8 rounded-full bg-navy text-white font-bold flex items-center justify-center shrink-0 text-base">3</span>
           <div className="flex-1 space-y-4">
             {rows.length > 0 ? (
               <Notice tone="info" lead={`${rows.length} row${rows.length === 1 ? '' : 's'} found.`}>
@@ -151,7 +151,7 @@ export default function CsvImporter({
               <p className="text-navy/70">Press the button once you have chosen a file.</p>
             )}
             {inviteOption && (
-              <label className="flex items-start gap-3 text-[1.15rem] cursor-pointer">
+              <label className="flex items-start gap-3 text-[1.0625rem] cursor-pointer">
                 <input type="checkbox" className="ks-check mt-0.5" checked={sendInvites} onChange={(e) => setSendInvites(e.target.checked)} />
                 <span>
                   Also send each new person a welcome email now.

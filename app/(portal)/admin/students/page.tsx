@@ -5,6 +5,7 @@ import { titleCase } from '@/lib/format'
 import PortalFrame from '@/components/portal/PortalFrame'
 import ActionForm from '@/components/portal/ActionForm'
 import CsvImporter from '@/components/portal/CsvImporter'
+import FilterTable from '@/components/portal/FilterTable'
 import { Container, PageHeader, Section, SelectField, TextField } from '@/components/portal/kit'
 import { createClass, createStudent, importStudentRows, moveStudent } from '../actions'
 
@@ -31,14 +32,24 @@ export default async function StudentsPage() {
   return (
     <PortalFrame role={profile.role} name={profile.full_name}>
       <PageHeader
-        back={{ href: '/admin', label: 'Back to the contents' }}
-        kicker="Children and classes"
-        title="Children and"
-        accent="classes"
+        title="Children and classes"
         intro="Add the school's classes first, then the children. Parents are connected to their children on the Parents page."
       />
 
-      <Container className="py-12 md:py-16 space-y-20">
+      <Container className="py-8 space-y-8">
+        <Section id="all" title={`All children (${d.students.length})`} hint="Type in the box to find a child by name, admission number or class.">
+          <FilterTable
+            label="Search for a child"
+            columns={['Name', 'Admission number', 'Class']}
+            rows={d.students.map((s) => ({
+              key: s.id,
+              search: `${s.full_name} ${s.admission_no} ${className(s.class_id)}`.toLowerCase(),
+              cells: [<strong key="n">{titleCase(s.full_name)}</strong>, s.admission_no, className(s.class_id)],
+            }))}
+            empty="No children have been added yet."
+          />
+        </Section>
+
         <Section
           id="classes"
           title="Classes"
@@ -69,7 +80,7 @@ export default async function StudentsPage() {
 
         <Section id="one" title="Add one child">
           <ActionForm action={createStudent} submitLabel="Add this child">
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5">
               <TextField id="child-name" name="fullName" label="Child's full name" />
               <TextField id="child-adm" name="admissionNo" label="Admission number" hint="For example: KSPS/2025/001" />
             </div>
@@ -85,40 +96,11 @@ export default async function StudentsPage() {
           hint="Use this when a child moves up. Their earlier report sheets stay with them."
         >
           <ActionForm action={moveStudent} submitLabel="Move this child">
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5">
               <SelectField id="move-child" name="studentId" label="Which child?" options={studentOptions} />
               <SelectField id="move-class" name="classId" label="Move to which class?" options={classOptions} />
             </div>
           </ActionForm>
-        </Section>
-
-        <Section id="all" title={`All children (${d.students.length})`} hint="Open a class to see who is in it.">
-          <div className="space-y-4">
-            {d.classes.map((c) => {
-              const kids = d.students.filter((s) => s.class_id === c.id)
-              return (
-                <details key={c.id} className="ks-panel group">
-                  <summary className="cursor-pointer list-none flex items-center justify-between gap-4 p-5 sm:p-6">
-                    <span className="font-display font-bold text-[1.6rem]">{titleCase(c.name)}</span>
-                    <span className="text-[1.1rem] text-navy/80">
-                      {kids.length} {kids.length === 1 ? 'child' : 'children'}
-                      <span className="ml-3 ks-link group-open:hidden">Open</span>
-                      <span className="ml-3 ks-link hidden group-open:inline">Close</span>
-                    </span>
-                  </summary>
-                  <ul className="border-t border-navy/15 divide-y divide-navy/10">
-                    {kids.length === 0 && <li className="p-5 text-navy/70">No children in this class yet.</li>}
-                    {kids.map((s) => (
-                      <li key={s.id} className="flex flex-wrap justify-between gap-x-6 px-5 sm:px-6 py-3 text-[1.2rem]">
-                        <span className="font-bold">{titleCase(s.full_name)}</span>
-                        <span className="text-navy/70">{s.admission_no}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              )
-            })}
-          </div>
         </Section>
       </Container>
     </PortalFrame>

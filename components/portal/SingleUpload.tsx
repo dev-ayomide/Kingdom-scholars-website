@@ -46,15 +46,17 @@ export default function SingleUpload({
       const rec = await recordReports({ studentIds: [studentId], session, term: t })
       if (rec.failed.length) throw new Error('The file uploaded but could not be saved. Please try again.')
 
-      let note = ''
-      if (notify) {
-        const n = await sendReportNotifications({ studentIds: [studentId], session, term: t })
-        note = n.blocked ? ` ${n.blocked}` : n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? ' was' : 's were'} emailed.` : ' No parent email was sent.'
-      }
-      setMsg({ ok: `Saved: ${termName(t)}, ${sessionLabel(session)}.${note}` })
+      // Show "Saved" straight away; the emails can take a few seconds.
+      const saved = `Saved: ${termName(t)}, ${sessionLabel(session)}.`
+      setMsg({ ok: notify ? `${saved} Emailing the parents…` : saved })
       setFile(null)
       ;(e.target as HTMLFormElement).reset()
       startTransition(() => router.refresh())
+      if (notify) {
+        const n = await sendReportNotifications({ studentIds: [studentId], session, term: t })
+        const note = n.blocked ? ` ${n.blocked}` : n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? ' was' : 's were'} emailed.` : ' No parent email was sent.'
+        setMsg({ ok: `${saved}${note}` })
+      }
     } catch (err) {
       setMsg({ error: err instanceof Error ? err.message : 'Something went wrong. Please try again.' })
     } finally {
@@ -87,7 +89,7 @@ export default function SingleUpload({
         <input id={`${id}-f`} type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="ks-input !py-3" />
         <p className="ks-hint mt-2">Choosing a file for a term that already has one will replace it.</p>
       </div>
-      <label className="flex items-start gap-3 text-[1.15rem] cursor-pointer">
+      <label className="flex items-start gap-3 text-[1.0625rem] cursor-pointer">
         <input type="checkbox" className="ks-check mt-0.5" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
         <span>Send the parents an email to say it is ready</span>
       </label>

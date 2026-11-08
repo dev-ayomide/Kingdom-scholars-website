@@ -4,10 +4,10 @@ import { requireRole } from '@/lib/auth'
 import { loadAdminCounts } from '@/lib/admin-data'
 import { greeting, titleCase } from '@/lib/format'
 import PortalFrame from '@/components/portal/PortalFrame'
-import { ArrowIcon, Container, PageHeader } from '@/components/portal/kit'
+import { BookIcon, ChevronIcon, Container, FileIcon, MailIcon, PageHeader, StaffIcon, Stat, UsersIcon } from '@/components/portal/kit'
 
 export const metadata: Metadata = {
-  title: 'Staff office',
+  title: 'Home',
   robots: { index: false, follow: false },
 }
 
@@ -16,82 +16,64 @@ export const dynamic = 'force-dynamic'
 export default async function AdminHome() {
   // The sign-in check and the numbers are fetched at the same time.
   const [{ profile }, c] = await Promise.all([requireRole(['admin']), loadAdminCounts()])
-  const waiting = c.waiting
   const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
 
   const tasks = [
     {
-      href: '/teacher',
-      title: 'Upload report sheets',
+      href: '/teacher', Icon: FileIcon, title: 'Upload report sheets',
       text: 'Add the PDF report sheets for a term, one at a time or many together.',
-      stat: plural(c.reports, 'report sheet', 'report sheets'),
-      note: 'uploaded so far',
     },
     {
-      href: '/admin/parents#welcome',
-      title: 'Send welcome emails',
-      text: 'Email parents and staff a button to choose their password and sign in.',
-      stat: waiting === 0 ? 'Everyone' : String(waiting),
-      note: waiting === 0 ? 'has signed in' : waiting === 1 ? 'person has not signed in yet' : 'people have not signed in yet',
+      href: '/admin/parents#welcome', Icon: MailIcon, title: 'Send welcome emails',
+      text: c.waiting === 0
+        ? 'Everyone has signed in, so no emails are needed.'
+        : `${plural(c.waiting, 'person has', 'people have')} not signed in yet. Email them a button to choose a password.`,
     },
     {
-      href: '/admin/parents',
-      title: 'Parents',
+      href: '/admin/parents', Icon: UsersIcon, title: 'Parents',
       text: 'Add parents, and connect each parent to their children.',
-      stat: plural(c.parents, 'parent', 'parents'),
-      note: 'on the portal',
     },
     {
-      href: '/admin/students',
-      title: 'Children and classes',
+      href: '/admin/students', Icon: BookIcon, title: 'Children and classes',
       text: 'Add classes and children, or move a child up to a new class.',
-      stat: plural(c.students, 'child', 'children'),
-      note: `in ${plural(c.classes, 'class', 'classes')}`,
     },
     {
-      href: '/admin/staff',
-      title: 'Teachers and staff',
+      href: '/admin/staff', Icon: StaffIcon, title: 'Teachers and staff',
       text: 'Give a teacher or the office a login, and choose each teacher’s class.',
-      stat: plural(c.staff, 'person', 'people'),
-      note: 'with staff logins',
     },
   ]
 
   return (
     <PortalFrame role={profile.role} name={profile.full_name}>
-      <PageHeader
-        kicker="Staff office"
-        title={`${greeting()},`}
-        accent={titleCase(profile.full_name)}
-        intro="What would you like to do today? Choose a line below. Each one opens its own page, with simple steps."
-      />
+      <PageHeader title="Home" intro={`${greeting()}, ${titleCase(profile.full_name)}. Here is where things stand.`} />
 
-      <Container className="py-12 md:py-16">
-        <nav aria-label="What you can do">
-          <ol className="border-t-[3px] border-double border-navy">
-            {tasks.map((t, i) => (
-              <li key={t.href} className="border-b border-navy/25 ks-rise" style={{ animationDelay: `${0.05 * i}s` }}>
-                <Link
-                  href={t.href}
-                  className="ks-toc-row grid grid-cols-[3.25rem_1fr] sm:grid-cols-[4.5rem_1fr_auto] items-center gap-x-4 sm:gap-x-6 gap-y-3 py-7 px-2 sm:px-4 -mx-2 sm:-mx-4"
-                >
-                  <span className="font-display italic font-bold text-wine text-5xl sm:text-6xl leading-none">{i + 1}</span>
-                  <span>
-                    <span className="block font-display font-bold text-[1.8rem] sm:text-[2.1rem] leading-tight">{t.title}</span>
-                    <span className="block mt-1 text-[1.2rem] text-navy/80 max-w-xl">{t.text}</span>
+      <Container className="py-8 space-y-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Stat label="Children" value={c.students} note={`in ${plural(c.classes, 'class', 'classes')}`} />
+          <Stat label="Parents" value={c.parents} note="with a login" />
+          <Stat label="Report sheets" value={c.reports} note="uploaded so far" />
+          <Stat label="Not signed in yet" value={c.waiting} note={c.waiting === 0 ? 'everyone has signed in' : 'need a welcome email'} />
+        </div>
+
+        <section aria-labelledby="todo-h" className="ks-panel">
+          <div className="px-5 sm:px-7 pt-6 pb-4 border-b border-[#E3E7EC]">
+            <h2 id="todo-h">What would you like to do?</h2>
+          </div>
+          <ul className="divide-y divide-[#E3E7EC]">
+            {tasks.map(({ href, Icon, title, text }) => (
+              <li key={href}>
+                <Link href={href} className="flex items-center gap-4 px-5 sm:px-7 py-5 hover:bg-[#F7F8FA] transition-colors">
+                  <span className="shrink-0 w-12 h-12 rounded-md bg-navy/8 text-navy flex items-center justify-center"><Icon className="w-6 h-6" /></span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-bold text-[1.1875rem]">{title}</span>
+                    <span className="block ks-muted">{text}</span>
                   </span>
-                  <span className="col-span-2 sm:col-span-1 flex items-center justify-between sm:justify-end gap-6">
-                    <span className="sm:text-right leading-tight">
-                      <span className="block font-bold text-[1.35rem]">{t.stat}</span>
-                      <span className="block text-[1.05rem] text-navy/70">{t.note}</span>
-                    </span>
-                    <ArrowIcon className="ks-toc-arrow w-9 h-9 text-wine shrink-0" />
-                  </span>
+                  <ChevronIcon className="w-6 h-6 text-[#4A5568] shrink-0" />
                 </Link>
               </li>
             ))}
-          </ol>
-        </nav>
+          </ul>
+        </section>
       </Container>
     </PortalFrame>
   )

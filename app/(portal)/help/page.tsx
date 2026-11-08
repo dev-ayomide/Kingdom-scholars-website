@@ -32,7 +32,7 @@ function Example({ good, children, why }: { good: boolean; children: string; why
       <span className={good ? 'text-[#2B7A4B]' : 'text-[#A32A2A]'}>{good ? <CheckIcon className="w-7 h-7" /> : <AlertIcon className="w-7 h-7" />}</span>
       <span>
         <strong className="break-all">{children}</strong>
-        {why && <span className="block text-[1.1rem] text-navy/80">{why}</span>}
+        {why && <span className="block text-[1rem] text-navy/80">{why}</span>}
       </span>
     </li>
   )
@@ -46,10 +46,10 @@ export default async function HelpPage() {
 
   return (
     <Frame>
-      <PageHeader kicker="Help" title="How to" accent="do things" intro="Short answers to the questions people ask most. If you are still stuck, please call the school office." />
-      <Container className="py-12 md:py-16 space-y-20">
+      <PageHeader title="Help" intro="Short answers to the questions people ask most. If you are still stuck, please call the school office." />
+      <Container className="py-8 space-y-8">
         <Section id="download" title="Downloading a report sheet (parents)">
-          <ol className="space-y-4 text-[1.25rem] list-decimal pl-7 marker:font-bold marker:text-wine">
+          <ol className="space-y-4 text-[1.125rem] list-decimal pl-7 marker:font-bold marker:text-wine">
             <li>Sign in with your email address and password.</li>
             <li>Find your child&apos;s name. Under it is a line for each term.</li>
             <li>Press <strong>Download PDF</strong> next to the term you want.</li>
@@ -60,7 +60,7 @@ export default async function HelpPage() {
         {staff && (
           <>
             <Section id="upload" title="Uploading report sheets (staff)">
-              <ol className="space-y-4 text-[1.25rem] list-decimal pl-7 marker:font-bold marker:text-wine">
+              <ol className="space-y-4 text-[1.125rem] list-decimal pl-7 marker:font-bold marker:text-wine">
                 <li>Open <Link href="/teacher" className="ks-link">Report sheets</Link>.</li>
                 <li><strong>Step 1:</strong> choose the school year and the term.</li>
                 <li><strong>Step 2:</strong> choose the PDF files. You can choose many at once.</li>
@@ -74,17 +74,17 @@ export default async function HelpPage() {
               title="Naming the files"
               hint="The computer finds the right child from the file's name, so each file must be named with the child's admission number."
             >
-              <p className="text-[1.25rem] mb-6 max-w-2xl">
-                A child with admission number <strong>KSPS/2025/119</strong> gets a file called <strong>KSPS-2025-119.pdf</strong>. A file name cannot
+              <p className="text-[1.125rem] mb-6 max-w-2xl">
+                A child with admission number <strong>KSPS/2025/XXX</strong> gets a file called <strong>KSPS-2025-XXX.pdf</strong>. A file name cannot
                 contain a slash, so use a dash instead. Capital letters and spaces do not matter.
               </p>
               <ul className="ks-panel divide-y divide-navy/10">
-                <Example good>KSPS-2025-119.pdf</Example>
-                <Example good why="Capital letters and spaces are fine.">ksps 2025 119.pdf</Example>
+                <Example good>KSPS-2025-XXX.pdf</Example>
+                <Example good why="Capital letters and spaces are fine.">ksps 2025 XXX.pdf</Example>
                 <Example good={false} why="This uses the child's name. The file must use the admission number.">Tolu Adeyemi Report.pdf</Example>
                 <Example good={false} why="This is a Word document. Please save it as a PDF first.">KSPS-2025-119.docx</Example>
               </ul>
-              <p className="mt-6 text-[1.2rem] max-w-2xl">
+              <p className="mt-6 text-[1.125rem] max-w-2xl">
                 One file for each child for each term. If you upload again for the same term, the new file replaces the old one.
               </p>
             </Section>
@@ -92,7 +92,7 @@ export default async function HelpPage() {
         )}
 
         <Section id="cant-sign-in" title="Someone cannot sign in">
-          <ul className="space-y-4 text-[1.25rem] list-disc pl-7 marker:text-wine">
+          <ul className="space-y-4 text-[1.125rem] list-disc pl-7 marker:text-wine">
             <li>They should press <strong>I forgot my password</strong> on the sign-in page and use the email address the school has for them.</li>
             <li>If no email arrives, ask them to look in their spam or junk folder.</li>
             {staff && (
@@ -104,9 +104,9 @@ export default async function HelpPage() {
           </ul>
         </Section>
 
-        <section className="border-t-2 border-navy pt-8">
-          <h2 className="text-[2.1rem] font-bold leading-tight">Still stuck?</h2>
-          <p className="mt-4 text-[1.3rem]">
+        <section className="ks-panel px-5 sm:px-7 py-6">
+          <h2>Still stuck?</h2>
+          <p className="mt-2">
             Call the school office on <a href={SCHOOL_PHONE_HREF} className="ks-link">{SCHOOL_PHONE}</a>. We are there Monday to Friday, 7:30am to 4:00pm.
           </p>
         </section>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display, Atkinson_Hyperlegible } from 'next/font/google'
+import { Inter, Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
@@ -18,12 +18,12 @@ const playfair = Playfair_Display({
   display: 'swap',
 })
 
-// Atkinson Hyperlegible was designed by the Braille Institute for low-vision
-// readers. Used for the staff/parent portal, where text must be easy to read.
-const read = Atkinson_Hyperlegible({
+// Source Sans 3: a plain, highly legible typeface (the one used by many
+// government websites). Used for the staff/parent portal.
+const read = Source_Sans_3({
   subsets: ['latin'],
   variable: '--font-read',
-  weight: ['400', '700'],
+  weight: ['400', '600', '700'],
   display: 'swap',
 })
 

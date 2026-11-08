@@ -122,23 +122,23 @@ export default function BatchUploader({ sessions, defaultSession }: { sessions: 
     }
     setRows([...copy])
 
-    let mailNote = ''
-    if (notify && recorded.length) {
+    const failedCount = copy.filter((c) => c.state === 'failed').length
+    const saved =
+      `${recorded.length} report sheet${recorded.length === 1 ? '' : 's'} saved for ${termName(t)}, ${sessionLabel(session)}.` +
+      (failedCount ? ` ${failedCount} did not work: see the list below.` : '')
+    const willEmail = notify && recorded.length > 0
+    // Show "saved" straight away; the emails can take a few seconds.
+    setSummary({ tone: failedCount ? 'warn' : 'ok', text: willEmail ? `${saved} Emailing the parents…` : saved })
+    startTransition(() => router.refresh())
+
+    if (willEmail) {
       const n = await sendReportNotifications({ studentIds: recorded, session, term: t })
-      mailNote = n.blocked
+      const mailNote = n.blocked
         ? ` ${n.blocked}`
         : ` ${n.emailed} parent${n.emailed === 1 ? ' was' : 's were'} emailed${n.failed ? `, and ${n.failed} email${n.failed === 1 ? '' : 's'} could not be sent` : ''}.`
+      setSummary({ tone: failedCount ? 'warn' : 'ok', text: `${saved}${mailNote}` })
     }
-    const failedCount = copy.filter((c) => c.state === 'failed').length
-    setSummary({
-      tone: failedCount ? 'warn' : 'ok',
-      text:
-        `${recorded.length} report sheet${recorded.length === 1 ? '' : 's'} saved for ${termName(t)}, ${sessionLabel(session)}.` +
-        (failedCount ? ` ${failedCount} did not work: see the list below.` : '') +
-        mailNote,
-    })
     setBusy(false)
-    startTransition(() => router.refresh())
   }
 
   return (
@@ -202,19 +202,19 @@ export default function BatchUploader({ sessions, defaultSession }: { sessions: 
           }`}
         >
           <UploadIcon className="w-10 h-10 mx-auto mb-3 text-wine" />
-          <span className="block text-[1.4rem] font-bold">
+          <span className="block text-[1.25rem] font-bold">
             {termChosen ? 'Choose the files from this computer' : 'Choose the term first (step 1)'}
           </span>
           {termChosen && <span className="block ks-hint mt-1">or drag the files and drop them here</span>}
         </label>
-        {checking && <p className="mt-4 text-[1.2rem]" role="status">Checking your files…</p>}
+        {checking && <p className="mt-4 text-[1.125rem]" role="status">Checking your files…</p>}
         {error && <div className="mt-4"><Notice tone="bad">{error}</Notice></div>}
       </Step>
 
       {/* ---------------------------------------------------------- step 3 */}
       <Step n={3} title="Check the list, then upload" last done={!!summary && summary.tone === 'ok'}>
         {rows.length === 0 ? (
-          <p className="text-navy/65 text-[1.2rem]">Your files will appear here so you can check them before anything is uploaded.</p>
+          <p className="text-navy/65 text-[1.125rem]">Your files will appear here so you can check them before anything is uploaded.</p>
         ) : (
           <div className="space-y-6">
             <Notice
@@ -238,13 +238,13 @@ export default function BatchUploader({ sessions, defaultSession }: { sessions: 
                     <div className="min-w-0">
                       <p className="font-bold break-all">{r.file.name}</p>
                       {good ? (
-                        <p className="text-[1.15rem]">
+                        <p className="text-[1.0625rem]">
                           {r.state === 'uploaded' ? 'Uploaded for ' : 'For '}
                           <strong>{titleCase(r.match.studentName ?? '')}</strong>
                           {r.match.className ? `, ${titleCase(r.match.className)}` : ''}
                         </p>
                       ) : (
-                        <p className="text-[1.15rem] text-[#7A1B1B]">{why}</p>
+                        <p className="text-[1.0625rem] text-[#7A1B1B]">{why}</p>
                       )}
                     </div>
                   </li>
@@ -254,7 +254,7 @@ export default function BatchUploader({ sessions, defaultSession }: { sessions: 
 
             {!summary && (
               <div className="space-y-5">
-                <label className="flex items-start gap-3 text-[1.2rem] cursor-pointer">
+                <label className="flex items-start gap-3 text-[1.125rem] cursor-pointer">
                   <input type="checkbox" className="ks-check mt-0.5" checked={notify} onChange={(e) => setNotify(e.target.checked)} disabled={busy} />
                   <span>
                     Send each parent an email to say the report sheet is ready.
