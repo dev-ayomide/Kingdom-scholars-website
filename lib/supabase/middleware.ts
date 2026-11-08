@@ -25,9 +25,10 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // getClaims() checks the token's signature locally (no network trip) and
+  // refreshes it when it has expired. Row-level security still re-checks every query.
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims?.sub ? data.claims : null
 
   const path = request.nextUrl.pathname
   if (!user && PROTECTED.some((p) => path === p || path.startsWith(`${p}/`))) {

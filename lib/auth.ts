@@ -12,19 +12,19 @@ export const HOME_FOR_ROLE: Record<UserRole, string> = {
 // only checks that someone is signed in, not what they are allowed to do.
 export async function requireRole(roles: UserRole[]) {
   const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  // Local token check (no network trip); the database re-checks access on every query.
+  const { data: auth } = await supabase.auth.getClaims()
+  const userId = auth?.claims?.sub
+  if (!userId) redirect('/login')
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('id, role, full_name')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single<Profile>()
 
   if (!profile) redirect('/login?error=no-profile')
   if (!roles.includes(profile.role)) redirect(HOME_FOR_ROLE[profile.role])
 
-  return { supabase, user, profile }
+  return { supabase, user: { id: userId }, profile }
 }

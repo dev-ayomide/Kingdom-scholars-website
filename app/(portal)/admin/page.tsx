@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { requireRole } from '@/lib/auth'
-import { loadAdminData } from '@/lib/admin-data'
+import { loadAdminCounts } from '@/lib/admin-data'
 import { greeting, titleCase } from '@/lib/format'
 import PortalFrame from '@/components/portal/PortalFrame'
 import { ArrowIcon, Container, PageHeader } from '@/components/portal/kit'
@@ -14,10 +14,9 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function AdminHome() {
-  const { supabase, profile } = await requireRole(['admin'])
-  const d = await loadAdminData(supabase)
-
-  const waiting = d.profiles.filter((p) => !d.signedIn(p.id)).length
+  // The sign-in check and the numbers are fetched at the same time.
+  const [{ profile }, c] = await Promise.all([requireRole(['admin']), loadAdminCounts()])
+  const waiting = c.waiting
   const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
 
   const tasks = [
@@ -25,7 +24,7 @@ export default async function AdminHome() {
       href: '/teacher',
       title: 'Upload report sheets',
       text: 'Add the PDF report sheets for a term, one at a time or many together.',
-      stat: plural(d.reportCount, 'report sheet', 'report sheets'),
+      stat: plural(c.reports, 'report sheet', 'report sheets'),
       note: 'uploaded so far',
     },
     {
@@ -39,21 +38,21 @@ export default async function AdminHome() {
       href: '/admin/parents',
       title: 'Parents',
       text: 'Add parents, and connect each parent to their children.',
-      stat: plural(d.parents.length, 'parent', 'parents'),
+      stat: plural(c.parents, 'parent', 'parents'),
       note: 'on the portal',
     },
     {
       href: '/admin/students',
       title: 'Children and classes',
       text: 'Add classes and children, or move a child up to a new class.',
-      stat: plural(d.students.length, 'child', 'children'),
-      note: `in ${plural(d.classes.length, 'class', 'classes')}`,
+      stat: plural(c.students, 'child', 'children'),
+      note: `in ${plural(c.classes, 'class', 'classes')}`,
     },
     {
       href: '/admin/staff',
       title: 'Teachers and staff',
       text: 'Give a teacher or the office a login, and choose each teacher’s class.',
-      stat: plural(d.staff.length, 'person', 'people'),
+      stat: plural(c.staff, 'person', 'people'),
       note: 'with staff logins',
     },
   ]

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import NavLinks, { type NavItem } from './NavLinks'
+import NavProgress from './NavProgress'
 import { Container } from './kit'
 import { SCHOOL_PHONE, SCHOOL_PHONE_HREF, titleCase } from '@/lib/format'
 import type { UserRole } from '@/lib/types'
@@ -44,6 +45,7 @@ export default function PortalFrame({
 }: { role: UserRole; name: string; children: React.ReactNode }) {
   return (
     <>
+      <NavProgress />
       <div className="relative bg-navy text-white">
         <Container className="!max-w-6xl flex items-center justify-between gap-4 min-h-[5rem] py-3">
           <Link href={HOME[role]} className="flex items-center gap-3 min-w-0" aria-label="Kingdom Scholars, back to your home page">

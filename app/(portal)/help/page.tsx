@@ -16,9 +16,10 @@ export const dynamic = 'force-dynamic'
 async function whoIsHere(): Promise<{ role: UserRole; name: string } | null> {
   try {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
-    const { data } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single<{ role: UserRole; full_name: string }>()
+    const { data: auth } = await supabase.auth.getClaims()
+    const userId = auth?.claims?.sub
+    if (!userId) return null
+    const { data } = await supabase.from('profiles').select('role, full_name').eq('id', userId).single<{ role: UserRole; full_name: string }>()
     return data ? { role: data.role, name: data.full_name } : null
   } catch {
     return null

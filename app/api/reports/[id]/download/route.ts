@@ -7,10 +7,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   if (!UUID.test(params.id)) return new NextResponse('Not found', { status: 404 })
 
   const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return new NextResponse('Unauthorized', { status: 401 })
+  const { data: auth } = await supabase.auth.getClaims()
+  if (!auth?.claims?.sub) return new NextResponse('Unauthorized', { status: 401 })
 
   // RLS: returns nothing unless this user is the child's parent, the class
   // teacher, or an admin. Same 404 either way so IDs can't be probed.

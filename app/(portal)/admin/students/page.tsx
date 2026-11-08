@@ -22,8 +22,7 @@ const STUDENT_FIELDS = [
 ]
 
 export default async function StudentsPage() {
-  const { supabase, profile } = await requireRole(['admin'])
-  const d = await loadAdminData(supabase)
+  const [{ profile }, d] = await Promise.all([requireRole(['admin']), loadAdminData({ classes: true, students: true })])
 
   const className = (id: string) => titleCase(d.classes.find((c) => c.id === id)?.name ?? '')
   const classOptions = d.classes.map((c) => ({ value: c.id, label: titleCase(c.name) }))

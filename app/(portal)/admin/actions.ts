@@ -1,11 +1,12 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { requireRole } from '@/lib/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildAccountMail, createAccount, listAuthUsers } from '@/lib/accounts'
 import { sendMails, type Mail } from '@/lib/email'
 import { normaliseKey } from '@/lib/pdf'
+import { AUTH_USERS_TAG } from '@/lib/admin-data'
 import type { ActionState, ImportResult } from '@/lib/types'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -67,6 +68,7 @@ export async function inviteAccount(_p: ActionState, fd: FormData): Promise<Acti
     return { error: /already|exists|registered/i.test(created.error) ? 'That email address already has an account.' : created.error }
   }
 
+  revalidateTag(AUTH_USERS_TAG)
   const mail = await buildAccountMail(email, full_name, 'invite')
   const { sent } = mail ? await sendMails([mail]) : { sent: 0 }
   return sent
@@ -273,6 +275,7 @@ export async function importParentRows(
     failed.forEach((e) => result.errors.push(`${e}: the welcome email could not be sent. Use "Send again" on the Parents page.`))
   }
 
+  if (result.created > 0) revalidateTag(AUTH_USERS_TAG)
   return result
 }
 

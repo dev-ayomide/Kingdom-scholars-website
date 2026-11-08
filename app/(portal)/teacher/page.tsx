@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { requireRole } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { currentSession, sessionLabel, sessionOptions, termName, titleCase } from '@/lib/format'
 import PortalFrame from '@/components/portal/PortalFrame'
 import SingleUpload from '@/components/portal/SingleUpload'
@@ -25,13 +27,17 @@ interface StudentRow {
 }
 
 export default async function ReportSheetsPage() {
-  const { supabase, profile } = await requireRole(['teacher', 'admin'])
+  // Everything is fetched at the same time (the token check is local and instant).
+  // Row-level security decides what each person actually gets back.
+  const supabase = createClient()
+  const { data: auth } = await supabase.auth.getClaims()
+  const userId = auth?.claims?.sub
+  if (!userId) redirect('/login')
 
-  // RLS: a teacher only gets their assigned classes' students; an admin gets all.
-  const [{ data: classData }, { data: studentData }] = await Promise.all([
-    profile.role === 'admin'
-      ? supabase.from('classes').select('id, name').order('name')
-      : supabase.from('teacher_classes').select('classes(id, name)').eq('teacher_id', profile.id),
+  const [{ profile }, allClasses, myClasses, { data: studentData }] = await Promise.all([
+    requireRole(['teacher', 'admin']),
+    supabase.from('classes').select('id, name').order('name'),
+    supabase.from('teacher_classes').select('classes(id, name)').eq('teacher_id', userId),
     supabase
       .from('students')
       .select('id, full_name, admission_no, class_id, reports(id, term, session, created_at)')
@@ -40,8 +46,8 @@ export default async function ReportSheetsPage() {
 
   const classes: SchoolClass[] =
     profile.role === 'admin'
-      ? ((classData ?? []) as SchoolClass[])
-      : ((classData ?? []) as unknown as { classes: SchoolClass }[])
+      ? ((allClasses.data ?? []) as SchoolClass[])
+      : ((myClasses.data ?? []) as unknown as { classes: SchoolClass }[])
           .map((r) => r.classes)
           .filter(Boolean)
           .sort((a, b) => a.name.localeCompare(b.name))

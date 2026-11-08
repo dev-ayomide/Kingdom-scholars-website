@@ -24,8 +24,10 @@ const PARENT_FIELDS = [
 ]
 
 export default async function ParentsPage() {
-  const { supabase, profile } = await requireRole(['admin'])
-  const d = await loadAdminData(supabase)
+  const [{ profile }, d] = await Promise.all([
+    requireRole(['admin']),
+    loadAdminData({ classes: true, students: true, profiles: true, parentStudents: true, users: true }),
+  ])
 
   const waiting = d.profiles.filter((p) => !d.signedIn(p.id))
   const className = (id: string) => titleCase(d.classes.find((c) => c.id === id)?.name ?? '')

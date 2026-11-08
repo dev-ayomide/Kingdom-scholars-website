@@ -16,8 +16,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function StaffPage() {
-  const { supabase, profile } = await requireRole(['admin'])
-  const d = await loadAdminData(supabase)
+  const [{ profile }, d] = await Promise.all([
+    requireRole(['admin']),
+    loadAdminData({ classes: true, profiles: true, teacherClasses: true, users: true }),
+  ])
   const className = (id: string) => titleCase(d.classes.find((c) => c.id === id)?.name ?? '')
 
   return (

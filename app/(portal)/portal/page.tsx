@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { requireRole } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { sessionLabel, termName, titleCase } from '@/lib/format'
 import PortalFrame from '@/components/portal/PortalFrame'
 import { Container, DownloadIcon, Notice, PageHeader } from '@/components/portal/kit'
@@ -21,13 +22,15 @@ interface ChildRow {
 }
 
 export default async function ParentPage() {
-  const { supabase, profile } = await requireRole(['parent'])
-
-  // Row-level security limits this to the parent's own children.
-  const { data } = await supabase
-    .from('students')
-    .select('id, full_name, admission_no, classes(name), reports(id, term, session, created_at)')
-    .order('full_name')
+  // Row-level security limits this to the parent's own children. Fetched at the
+  // same time as the role check, so the page needs only one wait.
+  const [{ profile }, { data }] = await Promise.all([
+    requireRole(['parent']),
+    createClient()
+      .from('students')
+      .select('id, full_name, admission_no, classes(name), reports(id, term, session, created_at)')
+      .order('full_name'),
+  ])
   const children = (data ?? []) as unknown as ChildRow[]
 
   return (
