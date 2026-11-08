@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { parseCsv, tableToRows, type FieldSpec } from '@/lib/csv'
 import type { ImportResult } from '@/lib/types'
-import { inputClass, labelClass } from './ActionForm'
+import { DownloadIcon, Notice, UploadIcon } from './kit'
 
 interface CsvImporterProps {
   fields: FieldSpec[]
+  // Plain-words description of the columns, e.g. "Full name, Admission number, Class"
+  columns: string
   // Rows with the same value in this column are sent in the same chunk
   // (e.g. all of one parent's rows). A field name, not a function, so it can
   // be passed from a server component.
@@ -21,16 +23,10 @@ interface CsvImporterProps {
 }
 
 export default function CsvImporter({
-  fields,
-  groupKey,
-  chunkSize = 20,
-  sample,
-  sampleName,
-  run,
-  inviteOption = false,
-  buttonLabel,
+  fields, columns, groupKey, chunkSize = 20, sample, sampleName, run, inviteOption = false, buttonLabel,
 }: CsvImporterProps) {
   const [rows, setRows] = useState<Record<string, string>[]>([])
+  const [fileName, setFileName] = useState('')
   const [sendInvites, setSendInvites] = useState(false)
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState('')
@@ -38,18 +34,23 @@ export default function CsvImporter({
   const [error, setError] = useState('')
   const router = useRouter()
   const [, startTransition] = useTransition()
+  const input = useRef<HTMLInputElement>(null)
 
   async function onPick(file: File | null) {
     setResult(null)
     setError('')
     setRows([])
+    setFileName('')
     if (!file) return
+    setFileName(file.name)
     const parsed = tableToRows(parseCsv(await file.text()), fields)
     if (parsed.missing.length) {
-      return setError(`Missing column${parsed.missing.length > 1 ? 's' : ''}: ${parsed.missing.join(', ')}.`)
+      return setError(
+        `This file is missing a column: ${parsed.missing.join(', ')}. Please use the example spreadsheet as a guide, and save it as "CSV".`
+      )
     }
-    if (parsed.rows.length === 0) return setError('The file has no rows.')
-    if (parsed.rows.length > 2000) return setError('Please import at most 2,000 rows at a time.')
+    if (parsed.rows.length === 0) return setError('The file has no rows in it.')
+    if (parsed.rows.length > 2000) return setError('Please add at most 2,000 rows at a time.')
     setRows(parsed.rows)
   }
 
@@ -57,7 +58,7 @@ export default function CsvImporter({
     if (sendInvites) {
       const people = new Set(rows.map((r) => (groupKey ? r[groupKey] : '').toLowerCase())).size
       const ok = window.confirm(
-        `This will EMAIL an account invite to up to ${people} people (everyone in the file who doesn't have an account yet). It cannot be undone. Continue?`
+        `This will send a welcome EMAIL to up to ${people} people (everyone in the file who does not have an account yet). An email cannot be taken back. Continue?`
       )
       if (!ok) return
     }
@@ -92,11 +93,13 @@ export default function CsvImporter({
         total.errors.push(...r.errors)
       }
     } catch {
-      total.errors.push('The import was interrupted. Check the results below, then run it again; people already added are skipped.')
+      total.errors.push('This was interrupted part-way. Check the numbers above, then try again. People already added are skipped, so nothing is added twice.')
     }
     setResult(total)
     setProgress('')
     setRows([])
+    setFileName('')
+    if (input.current) input.current.value = ''
     setBusy(false)
     startTransition(() => router.refresh())
   }
@@ -104,63 +107,88 @@ export default function CsvImporter({
   const sampleHref = `data:text/csv;charset=utf-8,${encodeURIComponent(sample)}`
 
   return (
-    <div className="space-y-4">
-      <p className="text-navy/55 text-sm">
-        Columns needed: <strong>{fields.map((f) => f.label).join(', ')}</strong>. Export from Excel or Google
-        Sheets as CSV.{' '}
-        <a href={sampleHref} download={sampleName} className="text-wine font-semibold hover:underline underline-offset-4">
-          Download an example
-        </a>
-      </p>
-      <div>
-        <label className={labelClass}>CSV file</label>
-        <input
-          type="file"
-          accept=".csv,text/csv"
-          disabled={busy}
-          onChange={(e) => onPick(e.target.files?.[0] ?? null)}
-          className={inputClass}
-        />
-      </div>
-      {inviteOption && (
-        <label className="flex items-center gap-2 text-sm text-navy/70">
-          <input type="checkbox" checked={sendInvites} onChange={(e) => setSendInvites(e.target.checked)} />
-          Also email each new person an invite now (leave unticked to add them silently; you can send invites later)
-        </label>
-      )}
-      {rows.length > 0 && <p className="text-navy/55 text-sm">{rows.length} rows read from the file.</p>}
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={start}
-          disabled={busy || rows.length === 0}
-          className="inline-flex items-center justify-center font-semibold tracking-wide rounded px-6 py-3 text-sm bg-wine text-white hover:bg-wine/90 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {busy ? progress || 'Working…' : buttonLabel}
-        </button>
-        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-      </div>
+    <div className="space-y-8">
+      <ol className="space-y-5 text-[1.2rem]">
+        <li className="flex gap-4">
+          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">1</span>
+          <div>
+            <p>Fill in a spreadsheet with these columns: <strong>{columns}</strong>.</p>
+            <a href={sampleHref} download={sampleName} className="ks-btn ks-btn-quiet ks-btn-small mt-3">
+              <DownloadIcon className="w-5 h-5" /> Download an example
+            </a>
+            <p className="ks-hint mt-3">
+              In Excel: File, then Save As, then choose &ldquo;CSV&rdquo;. In Google Sheets: File, Download, Comma-separated values.
+            </p>
+          </div>
+        </li>
+        <li className="flex gap-4">
+          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">2</span>
+          <div className="flex-1">
+            <p>Choose your saved file.</p>
+            <input
+              ref={input}
+              id={`csv-${sampleName}`}
+              type="file"
+              accept=".csv,text/csv"
+              disabled={busy}
+              onChange={(e) => onPick(e.target.files?.[0] ?? null)}
+              className="sr-only"
+            />
+            <label htmlFor={`csv-${sampleName}`} className="ks-btn ks-btn-quiet mt-3 cursor-pointer">
+              <UploadIcon className="w-6 h-6" /> {fileName ? 'Choose a different file' : 'Choose the file'}
+            </label>
+            {fileName && <p className="mt-3 text-[1.15rem]">Chosen: <strong className="break-all">{fileName}</strong></p>}
+          </div>
+        </li>
+        <li className="flex gap-4">
+          <span className="font-display font-bold italic text-wine text-3xl leading-none w-6 shrink-0">3</span>
+          <div className="flex-1 space-y-4">
+            {rows.length > 0 ? (
+              <Notice tone="info" lead={`${rows.length} row${rows.length === 1 ? '' : 's'} found.`}>
+                Nothing has been added yet. Press the button below when you are ready.
+              </Notice>
+            ) : (
+              <p className="text-navy/70">Press the button once you have chosen a file.</p>
+            )}
+            {inviteOption && (
+              <label className="flex items-start gap-3 text-[1.15rem] cursor-pointer">
+                <input type="checkbox" className="ks-check mt-0.5" checked={sendInvites} onChange={(e) => setSendInvites(e.target.checked)} />
+                <span>
+                  Also send each new person a welcome email now.
+                  <span className="block ks-hint">Leave this empty to add people quietly. You can send the emails later from the Parents page.</span>
+                </span>
+              </label>
+            )}
+            <button type="button" onClick={start} disabled={busy || rows.length === 0} className="ks-btn ks-btn-primary w-full sm:w-auto">
+              {busy ? progress || 'Working…' : buttonLabel}
+            </button>
+          </div>
+        </li>
+      </ol>
 
-      {result && (
-        <div className="rounded-xl border border-navy/[0.09] p-4 text-sm space-y-2">
-          <p className="text-green-700">
-            {result.created} created
-            {result.linked ? ` · ${result.linked} links saved` : ''}
-            {result.skipped ? ` · ${result.skipped} already existed` : ''}
-            {result.emailed ? ` · ${result.emailed} invite emails sent` : ''}
-          </p>
-          {result.errors.length > 0 && (
-            <div>
-              <p className="text-red-600 font-semibold">{result.errors.length} problem{result.errors.length === 1 ? '' : 's'}:</p>
-              <ul className="list-disc pl-5 text-red-600 max-h-48 overflow-y-auto">
-                {result.errors.map((e, i) => (
-                  <li key={i}>{e}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+      <div aria-live="polite" className="space-y-4">
+        {error && <Notice tone="bad">{error}</Notice>}
+        {result && (
+          <>
+            <Notice tone={result.errors.length ? 'warn' : 'ok'} lead={result.errors.length ? 'Finished, with some things to check.' : 'Finished.'}>
+              {result.created} added
+              {result.linked ? ` · ${result.linked} connected to a child` : ''}
+              {result.skipped ? ` · ${result.skipped} already there` : ''}
+              {result.emailed ? ` · ${result.emailed} welcome emails sent` : ''}
+            </Notice>
+            {result.errors.length > 0 && (
+              <div className="ks-panel p-5">
+                <p className="font-bold mb-2">
+                  {result.errors.length} row{result.errors.length === 1 ? '' : 's'} could not be used:
+                </p>
+                <ul className="list-disc pl-6 space-y-1 max-h-72 overflow-y-auto text-[1.1rem]">
+                  {result.errors.map((e, i) => (<li key={i}>{e}</li>))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }

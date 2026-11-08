@@ -3,22 +3,16 @@
 import { useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useFormState, useFormStatus } from 'react-dom'
+import { Notice } from './kit'
 import type { ActionState } from '@/lib/types'
 
-export const inputClass =
-  'w-full border border-navy/15 rounded-lg px-4 py-3 text-navy text-sm placeholder:text-navy/30 focus:outline-none focus:border-wine/40 focus:ring-2 focus:ring-wine/10 transition-all duration-200 bg-white font-sans'
-
-export const labelClass =
-  'block text-navy/50 font-semibold text-[11px] tracking-[0.18em] uppercase mb-2'
+export const inputClass = 'ks-input'
+export const labelClass = 'ks-label'
 
 function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus()
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center font-semibold tracking-wide rounded px-6 py-3 text-sm bg-wine text-white hover:bg-wine/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-    >
+    <button type="submit" disabled={pending} className="ks-btn ks-btn-primary w-full sm:w-auto">
       {pending ? 'Please wait…' : label}
     </button>
   )
@@ -32,35 +26,31 @@ interface ActionFormProps {
   confirm?: string
 }
 
-// Wraps a server action with pending state and an inline success/error message.
+// Wraps a server action with a pending state and a clear message underneath.
 export default function ActionForm({ action, submitLabel, children, className = '', confirm }: ActionFormProps) {
   const [state, formAction] = useFormState(action, {} as ActionState)
   const router = useRouter()
   const [, startTransition] = useTransition()
+  // Refresh from the browser (not the server) so the message stays on screen.
   useEffect(() => {
     if (state.ok) startTransition(() => router.refresh())
   }, [state, router])
+
   return (
     <form
       action={formAction}
-      className={`space-y-4 ${className}`}
+      className={`space-y-6 ${className}`}
       onSubmit={(e) => {
         if (confirm && !window.confirm(confirm)) e.preventDefault()
       }}
     >
       {children}
-      <div className="flex items-center gap-4">
+      <div>
         <Submit label={submitLabel} />
-        {state.error && (
-          <p role="alert" className="text-sm text-red-600">
-            {state.error}
-          </p>
-        )}
-        {state.ok && (
-          <p role="status" className="text-sm text-green-700">
-            {state.ok}
-          </p>
-        )}
+      </div>
+      <div aria-live="polite">
+        {state.error && <Notice tone="bad">{state.error}</Notice>}
+        {state.ok && <Notice tone="ok">{state.ok}</Notice>}
       </div>
     </form>
   )

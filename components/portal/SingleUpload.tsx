@@ -5,25 +5,35 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { recordReports, sendReportNotifications } from '@/lib/actions/reports'
 import { reportPath, validatePdf } from '@/lib/pdf'
-import { inputClass, labelClass } from './ActionForm'
+import { sessionLabel, termName } from '@/lib/format'
+import { Notice } from './kit'
 
-export default function SingleUpload({ studentId, defaultSession }: { studentId: string; defaultSession: string }) {
+const PROBLEM: Record<string, string> = {
+  'Larger than 5MB': 'That file is too big (over 5MB).',
+  'Not a PDF': 'That is not a PDF file.',
+  'File is empty': 'That file is empty.',
+}
+
+// Upload (or replace) one child's report sheet.
+export default function SingleUpload({
+  studentId, sessions, defaultSession,
+}: { studentId: string; sessions: string[]; defaultSession: string }) {
   const [session, setSession] = useState(defaultSession)
   const [term, setTerm] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [notify, setNotify] = useState(true)
   const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<{ ok?: string; error?: string }>({})
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const [msg, setMsg] = useState<{ ok?: string; error?: string }>({})
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setMsg({})
-    if (!file || !term) return setMsg({ error: 'Choose a term and a PDF.' })
-    if (!/^[0-9]{4}-[0-9]{4}$/.test(session)) return setMsg({ error: 'Session must look like 2025-2026.' })
+    if (!term) return setMsg({ error: 'Please choose the term.' })
+    if (!file) return setMsg({ error: 'Please choose the PDF file.' })
     const problem = await validatePdf(file)
-    if (problem) return setMsg({ error: problem + '.' })
+    if (problem) return setMsg({ error: PROBLEM[problem] ?? problem })
 
     setBusy(true)
     try {
@@ -31,38 +41,41 @@ export default function SingleUpload({ studentId, defaultSession }: { studentId:
       const { error } = await createClient()
         .storage.from('report-sheets')
         .upload(reportPath(studentId, session, t), file, { contentType: 'application/pdf', upsert: true })
-      if (error) throw new Error('Upload failed. You may not have access to this student.')
+      if (error) throw new Error('The file did not upload. You may not be allowed to add reports for this child.')
 
       const rec = await recordReports({ studentIds: [studentId], session, term: t })
-      if (rec.failed.length) throw new Error(rec.failed[0].reason)
+      if (rec.failed.length) throw new Error('The file uploaded but could not be saved. Please try again.')
 
       let note = ''
       if (notify) {
         const n = await sendReportNotifications({ studentIds: [studentId], session, term: t })
-        note = n.blocked ? ` ${n.blocked}` : n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? '' : 's'} emailed.` : ' No parent email sent.'
+        note = n.blocked ? ` ${n.blocked}` : n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? ' was' : 's were'} emailed.` : ' No parent email was sent.'
       }
-      setMsg({ ok: `Uploaded ${session} Term ${t}.${note}` })
+      setMsg({ ok: `Saved: ${termName(t)}, ${sessionLabel(session)}.${note}` })
       setFile(null)
       ;(e.target as HTMLFormElement).reset()
       startTransition(() => router.refresh())
     } catch (err) {
-      setMsg({ error: err instanceof Error ? err.message : 'Something went wrong.' })
+      setMsg({ error: err instanceof Error ? err.message : 'Something went wrong. Please try again.' })
     } finally {
       setBusy(false)
     }
   }
 
+  const id = `su-${studentId}`
   return (
-    <form onSubmit={submit} className="space-y-4">
-      <div className="grid sm:grid-cols-2 gap-4">
+    <form onSubmit={submit} className="space-y-5">
+      <div className="grid sm:grid-cols-2 gap-5">
         <div>
-          <label className={labelClass}>Session</label>
-          <input value={session} onChange={(e) => setSession(e.target.value)} required className={inputClass} />
+          <label htmlFor={`${id}-s`} className="ks-label">School year</label>
+          <select id={`${id}-s`} value={session} onChange={(e) => setSession(e.target.value)} className="ks-input">
+            {sessions.map((s) => (<option key={s} value={s}>{sessionLabel(s)}</option>))}
+          </select>
         </div>
         <div>
-          <label className={labelClass}>Term</label>
-          <select value={term} onChange={(e) => setTerm(e.target.value)} required className={inputClass}>
-            <option value="" disabled>Choose…</option>
+          <label htmlFor={`${id}-t`} className="ks-label">Term</label>
+          <select id={`${id}-t`} value={term} onChange={(e) => setTerm(e.target.value)} className="ks-input">
+            <option value="" disabled>Choose the term…</option>
             <option value="1">First term</option>
             <option value="2">Second term</option>
             <option value="3">Third term</option>
@@ -70,23 +83,18 @@ export default function SingleUpload({ studentId, defaultSession }: { studentId:
         </div>
       </div>
       <div>
-        <label className={labelClass}>PDF (max 5MB). Uploading again replaces the existing one.</label>
-        <input type="file" accept="application/pdf" required onChange={(e) => setFile(e.target.files?.[0] ?? null)} className={inputClass} />
+        <label htmlFor={`${id}-f`} className="ks-label">The PDF file</label>
+        <input id={`${id}-f`} type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="ks-input !py-3" />
+        <p className="ks-hint mt-2">Choosing a file for a term that already has one will replace it.</p>
       </div>
-      <label className="flex items-center gap-2 text-sm text-navy/70">
-        <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
-        Email the parents that a report is ready
+      <label className="flex items-start gap-3 text-[1.15rem] cursor-pointer">
+        <input type="checkbox" className="ks-check mt-0.5" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
+        <span>Send the parents an email to say it is ready</span>
       </label>
-      <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={busy}
-          className="inline-flex items-center justify-center font-semibold tracking-wide rounded px-6 py-3 text-sm bg-wine text-white hover:bg-wine/90 disabled:opacity-60"
-        >
-          {busy ? 'Uploading…' : 'Upload report'}
-        </button>
-        {msg.error && <p role="alert" className="text-sm text-red-600">{msg.error}</p>}
-        {msg.ok && <p role="status" className="text-sm text-green-700">{msg.ok}</p>}
+      <button type="submit" disabled={busy} className="ks-btn ks-btn-primary w-full sm:w-auto">{busy ? 'Uploading…' : 'Upload this report sheet'}</button>
+      <div aria-live="polite">
+        {msg.error && <Notice tone="bad">{msg.error}</Notice>}
+        {msg.ok && <Notice tone="ok">{msg.ok}</Notice>}
       </div>
     </form>
   )
