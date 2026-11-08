@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { matchReportFiles, recordReports, sendReportNotifications } from '@/lib/actions/reports'
 import { reportPath, SESSION_RE, validatePdf } from '@/lib/pdf'
@@ -28,6 +29,8 @@ export default function BatchUploader({ defaultSession }: { defaultSession: stri
   const [notify, setNotify] = useState(true)
   const [rows, setRows] = useState<Row[]>([])
   const [busy, setBusy] = useState(false)
+  const router = useRouter()
+  const [, startTransition] = useTransition()
   const [summary, setSummary] = useState('')
   const [error, setError] = useState('')
 
@@ -108,13 +111,14 @@ export default function BatchUploader({ defaultSession }: { defaultSession: stri
         mailNote
     )
     setBusy(false)
+    startTransition(() => router.refresh())
   }
 
   return (
     <div className="space-y-4">
       <p className="text-navy/55 text-sm leading-relaxed">
-        Name each PDF with the child&apos;s admission number, for example <strong>KSPS-2025-119.pdf</strong> for
-        KSPS/2025/119 (a file name can&apos;t contain a slash), then select all the files at once. Dashes, spaces
+        Name each PDF with the child&apos;s admission number, for example <strong>KSPS-2025-XXX.pdf</strong> for
+        admission number KSPS/2025/XXX (a file name can&apos;t contain a slash). Then select all the files at once. Dashes, spaces
         and capital letters don&apos;t matter.
       </p>
       <div className="grid sm:grid-cols-2 gap-4">

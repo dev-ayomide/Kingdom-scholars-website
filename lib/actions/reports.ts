@@ -93,8 +93,6 @@ export async function recordReports(input: {
     else recorded.push(studentId)
   }
 
-  revalidatePath('/teacher')
-  revalidatePath('/portal')
   return { recorded, failed }
 }
 

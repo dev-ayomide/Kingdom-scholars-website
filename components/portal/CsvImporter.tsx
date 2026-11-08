@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { parseCsv, tableToRows, type FieldSpec } from '@/lib/csv'
 import type { ImportResult } from '@/lib/types'
 import { inputClass, labelClass } from './ActionForm'
@@ -35,6 +36,8 @@ export default function CsvImporter({
   const [progress, setProgress] = useState('')
   const [result, setResult] = useState<ImportResult | null>(null)
   const [error, setError] = useState('')
+  const router = useRouter()
+  const [, startTransition] = useTransition()
 
   async function onPick(file: File | null) {
     setResult(null)
@@ -95,6 +98,7 @@ export default function CsvImporter({
     setProgress('')
     setRows([])
     setBusy(false)
+    startTransition(() => router.refresh())
   }
 
   const sampleHref = `data:text/csv;charset=utf-8,${encodeURIComponent(sample)}`

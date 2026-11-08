@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { recordReports, sendReportNotifications } from '@/lib/actions/reports'
 import { reportPath, validatePdf } from '@/lib/pdf'
@@ -12,6 +13,8 @@ export default function SingleUpload({ studentId, defaultSession }: { studentId:
   const [file, setFile] = useState<File | null>(null)
   const [notify, setNotify] = useState(true)
   const [busy, setBusy] = useState(false)
+  const router = useRouter()
+  const [, startTransition] = useTransition()
   const [msg, setMsg] = useState<{ ok?: string; error?: string }>({})
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -41,6 +44,7 @@ export default function SingleUpload({ studentId, defaultSession }: { studentId:
       setMsg({ ok: `Uploaded ${session} Term ${t}.${note}` })
       setFile(null)
       ;(e.target as HTMLFormElement).reset()
+      startTransition(() => router.refresh())
     } catch (err) {
       setMsg({ error: err instanceof Error ? err.message : 'Something went wrong.' })
     } finally {

@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { useFormState, useFormStatus } from 'react-dom'
 import type { ActionState } from '@/lib/types'
 
@@ -33,6 +35,11 @@ interface ActionFormProps {
 // Wraps a server action with pending state and an inline success/error message.
 export default function ActionForm({ action, submitLabel, children, className = '', confirm }: ActionFormProps) {
   const [state, formAction] = useFormState(action, {} as ActionState)
+  const router = useRouter()
+  const [, startTransition] = useTransition()
+  useEffect(() => {
+    if (state.ok) startTransition(() => router.refresh())
+  }, [state, router])
   return (
     <form
       action={formAction}

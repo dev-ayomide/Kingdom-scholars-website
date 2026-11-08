@@ -12,10 +12,10 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? '').trim()
 
+// No revalidatePath here on purpose: a server-side refresh re-triggers the
+// site-wide loading screen and wipes the form's message. The browser calls
+// router.refresh() after success instead (see ActionForm / CsvImporter).
 function done(message: string): ActionState {
-  revalidatePath('/admin')
-  revalidatePath('/teacher')
-  revalidatePath('/portal')
   return { ok: message }
 }
 
@@ -69,7 +69,6 @@ export async function inviteAccount(_p: ActionState, fd: FormData): Promise<Acti
 
   const mail = await buildAccountMail(email, full_name, 'invite')
   const { sent } = mail ? await sendMails([mail]) : { sent: 0 }
-  revalidatePath('/admin')
   return sent
     ? { ok: `Account created. An invite was emailed to ${email}.` }
     : { ok: `Account created, but the invite email could not be sent. Use "Resend invite" below.` }
@@ -179,7 +178,6 @@ export async function importStudentRows(
     if (error) result.errors.push(`Could not save this group of students: ${error.message}`)
     else result.created = toInsert.length
   }
-  revalidatePath('/admin')
   return result
 }
 
@@ -275,7 +273,6 @@ export async function importParentRows(
     failed.forEach((e) => result.errors.push(`${e}: invite email failed. Use "Resend invite".`))
   }
 
-  revalidatePath('/admin')
   return result
 }
 
@@ -299,7 +296,6 @@ export async function resendAllPending(_p: ActionState, _fd: FormData): Promise<
   }
   const { sent, failed, blocked } = await sendMails(mails)
   if (blocked) return { error: blocked }
-  revalidatePath('/admin')
   return failed.length
     ? { error: `${sent} sent, ${failed.length} failed: ${failed.slice(0, 5).join(', ')}${failed.length > 5 ? '…' : ''}` }
     : { ok: `Sent ${sent} invite email${sent === 1 ? '' : 's'}.` }
