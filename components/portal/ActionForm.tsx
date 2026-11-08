@@ -27,13 +27,20 @@ interface ActionFormProps {
   submitLabel: string
   children: React.ReactNode
   className?: string
+  confirm?: string
 }
 
 // Wraps a server action with pending state and an inline success/error message.
-export default function ActionForm({ action, submitLabel, children, className = '' }: ActionFormProps) {
+export default function ActionForm({ action, submitLabel, children, className = '', confirm }: ActionFormProps) {
   const [state, formAction] = useFormState(action, {} as ActionState)
   return (
-    <form action={formAction} className={`space-y-4 ${className}`}>
+    <form
+      action={formAction}
+      className={`space-y-4 ${className}`}
+      onSubmit={(e) => {
+        if (confirm && !window.confirm(confirm)) e.preventDefault()
+      }}
+    >
       {children}
       <div className="flex items-center gap-4">
         <Submit label={submitLabel} />

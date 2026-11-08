@@ -36,7 +36,7 @@ export default function SingleUpload({ studentId, defaultSession }: { studentId:
       let note = ''
       if (notify) {
         const n = await sendReportNotifications({ studentIds: [studentId], session, term: t })
-        note = n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? '' : 's'} emailed.` : ' No parent email sent.'
+        note = n.blocked ? ` ${n.blocked}` : n.emailed ? ` ${n.emailed} parent${n.emailed === 1 ? '' : 's'} emailed.` : ' No parent email sent.'
       }
       setMsg({ ok: `Uploaded ${session} Term ${t}.${note}` })
       setFile(null)

@@ -30,7 +30,7 @@ export default function CsvImporter({
   buttonLabel,
 }: CsvImporterProps) {
   const [rows, setRows] = useState<Record<string, string>[]>([])
-  const [sendInvites, setSendInvites] = useState(true)
+  const [sendInvites, setSendInvites] = useState(false)
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState('')
   const [result, setResult] = useState<ImportResult | null>(null)
@@ -51,6 +51,13 @@ export default function CsvImporter({
   }
 
   async function start() {
+    if (sendInvites) {
+      const people = new Set(rows.map((r) => (groupKey ? r[groupKey] : '').toLowerCase())).size
+      const ok = window.confirm(
+        `This will EMAIL an account invite to up to ${people} people (everyone in the file who doesn't have an account yet). It cannot be undone. Continue?`
+      )
+      if (!ok) return
+    }
     setBusy(true)
     setResult(null)
     setError('')
@@ -114,7 +121,7 @@ export default function CsvImporter({
       {inviteOption && (
         <label className="flex items-center gap-2 text-sm text-navy/70">
           <input type="checkbox" checked={sendInvites} onChange={(e) => setSendInvites(e.target.checked)} />
-          Email each new person an invite to set their password
+          Also email each new person an invite now (leave unticked to add them silently; you can send invites later)
         </label>
       )}
       {rows.length > 0 && <p className="text-navy/55 text-sm">{rows.length} rows read from the file.</p>}

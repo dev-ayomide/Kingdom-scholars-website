@@ -8,7 +8,7 @@ export async function notifyReportsReady(
   studentIds: string[],
   session: string,
   term: number
-): Promise<{ emailed: number; failed: number }> {
+): Promise<{ emailed: number; failed: number; blocked?: string }> {
   if (studentIds.length === 0) return { emailed: 0, failed: 0 }
   const service = createAdminClient()
 
@@ -43,6 +43,6 @@ export async function notifyReportsReady(
     return to ? [reportsReadyMail(to, parentName.get(pid) ?? 'Parent', items)] : []
   })
 
-  const { sent, failed } = await sendMails(mails)
-  return { emailed: sent, failed: failed.length }
+  const { sent, failed, blocked } = await sendMails(mails)
+  return { emailed: sent, failed: failed.length, blocked }
 }

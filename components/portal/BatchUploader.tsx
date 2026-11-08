@@ -97,7 +97,9 @@ export default function BatchUploader({ defaultSession }: { defaultSession: stri
     let mailNote = ''
     if (notify && recorded.length) {
       const n = await sendReportNotifications({ studentIds: recorded, session, term: t })
-      mailNote = ` ${n.emailed} parent email${n.emailed === 1 ? '' : 's'} sent${n.failed ? `, ${n.failed} failed` : ''}.`
+      mailNote = n.blocked
+        ? ` ${n.blocked}`
+        : ` ${n.emailed} parent email${n.emailed === 1 ? '' : 's'} sent${n.failed ? `, ${n.failed} failed` : ''}.`
     }
     const failedCount = copy.filter((c) => c.state === 'failed').length
     setSummary(

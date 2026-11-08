@@ -11,6 +11,7 @@ import {
   moveStudent,
   inviteAccount,
   resendInvite,
+  resendAllPending,
   assignTeacher,
   unassignTeacher,
   linkParent,
@@ -101,6 +102,7 @@ export default async function AdminPage() {
   const ps = (parentStudents.data ?? []) as { parent_id: string; student_id: string }[]
 
   const userById = new Map(authUsers.map((u) => [u.id, u]))
+  const pendingCount = profiles.filter((p) => !userById.get(p.id)?.lastSignIn).length
   const className = (id: string) => cls.find((c) => c.id === id)?.name ?? '?'
   const classOptions = cls.map((c) => ({ value: c.id, label: c.name }))
   const studentOptions = stu.map((s) => ({
@@ -322,6 +324,22 @@ export default async function AdminPage() {
             ))}
           </ul>
         </details>
+      </Card>
+
+      <Card title="6. Invites">
+        <p className="text-navy/55 text-sm mb-4">
+          {pendingCount === 0
+            ? 'Everyone with an account has signed in.'
+            : `${pendingCount} account${pendingCount === 1 ? ' has' : 's have'} not signed in yet.`}{' '}
+          This emails each of them a fresh link to choose their password. Older invite links stop working.
+        </p>
+        <ActionForm
+          action={resendAllPending}
+          submitLabel="Send invites to everyone pending"
+          confirm={`This will email ${pendingCount} people right now. It cannot be undone. Make sure the site address in your settings is the live one. Continue?`}
+        >
+          <span />
+        </ActionForm>
       </Card>
     </PortalShell>
   )

@@ -2,6 +2,8 @@ import { Resend } from 'resend'
 
 const FROM = 'Kingdom Scholars Portal <no-reply@kingdomscholars.com.ng>'
 
+const LOCAL_BATCH_LIMIT = 3
+
 export interface Mail {
   to: string
   subject: string
@@ -19,6 +21,10 @@ export function esc(s: string) {
 // Base URL used in email links. Set NEXT_PUBLIC_SITE_URL in production.
 export function siteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
+}
+
+export function isLocalSite() {
+  return /^https?:\/\/(localhost|127\.0\.0\.1)/i.test(siteUrl())
 }
 
 function layout(heading: string, body: string) {
@@ -91,8 +97,18 @@ export function reportsReadyMail(
 }
 
 // Sends in batches of 100 (Resend's batch limit). Never throws.
-export async function sendMails(mails: Mail[]): Promise<{ sent: number; failed: string[] }> {
+export async function sendMails(
+  mails: Mail[]
+): Promise<{ sent: number; failed: string[]; blocked?: string }> {
   if (mails.length === 0) return { sent: 0, failed: [] }
+  // Safety net: links to localhost can't work for recipients, so never mass-send from a local copy.
+  if (isLocalSite() && mails.length > LOCAL_BATCH_LIMIT) {
+    return {
+      sent: 0,
+      failed: [],
+      blocked: `${mails.length} emails were NOT sent: NEXT_PUBLIC_SITE_URL is still ${siteUrl()}, so the links would not work for recipients. Deploy the site and set the real address first.`,
+    }
+  }
   if (!process.env.RESEND_API_KEY) {
     return { sent: 0, failed: mails.map((m) => m.to) }
   }

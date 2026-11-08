@@ -104,7 +104,7 @@ export async function sendReportNotifications(input: {
   studentIds: string[]
   session: string
   term: number
-}): Promise<{ emailed: number; failed: number }> {
+}): Promise<{ emailed: number; failed: number; blocked?: string }> {
   const { supabase } = await requireRole(['teacher', 'admin'])
   const ids = input.studentIds.filter((id) => UUID.test(id))
   if (ids.length === 0) return { emailed: 0, failed: 0 }

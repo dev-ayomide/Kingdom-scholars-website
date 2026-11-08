@@ -269,11 +269,38 @@ export async function importParentRows(
   }
 
   if (mails.length) {
-    const { sent, failed } = await sendMails(mails)
+    const { sent, failed, blocked } = await sendMails(mails)
     result.emailed = sent
+    if (blocked) result.errors.push(`Accounts were created but ${blocked} Use "Send invites to everyone pending" later.`)
     failed.forEach((e) => result.errors.push(`${e}: invite email failed. Use "Resend invite".`))
   }
 
   revalidatePath('/admin')
   return result
+}
+
+// Emails a fresh set-up link to everyone who has never signed in. Each call
+// makes a new link, so any earlier (e.g. broken) invite link stops working.
+export async function resendAllPending(_p: ActionState, _fd: FormData): Promise<ActionState> {
+  await requireRole(['admin'])
+  const service = createAdminClient()
+  const [users, { data: profiles }] = await Promise.all([
+    listAuthUsers(),
+    service.from('profiles').select('id, full_name'),
+  ])
+  const nameById = new Map((profiles ?? []).map((p) => [p.id as string, p.full_name as string]))
+  const pending = users.filter((u) => nameById.has(u.id) && !u.lastSignIn)
+  if (pending.length === 0) return { ok: 'Everyone has already signed in.' }
+
+  const mails: Mail[] = []
+  for (const u of pending) {
+    const mail = await buildAccountMail(u.email, nameById.get(u.id)!, 'invite')
+    if (mail) mails.push(mail)
+  }
+  const { sent, failed, blocked } = await sendMails(mails)
+  if (blocked) return { error: blocked }
+  revalidatePath('/admin')
+  return failed.length
+    ? { error: `${sent} sent, ${failed.length} failed: ${failed.slice(0, 5).join(', ')}${failed.length > 5 ? '…' : ''}` }
+    : { ok: `Sent ${sent} invite email${sent === 1 ? '' : 's'}.` }
 }
