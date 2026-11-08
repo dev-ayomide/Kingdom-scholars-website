@@ -14,6 +14,7 @@ export function titleCase(input: string): string {
       if (ABBR[lower]) return ABBR[lower]
       if (SMALL.has(lower)) return lower === 'of' && i > 0 ? 'of' : lower
       if (w.length <= 2 && /^[A-Z]+$/.test(w)) return w // KG, ZZ
+      if (/^\d+[a-z]+$/i.test(w)) return w.toUpperCase() // 4B, 3A
       return lower.replace(/(^|[-'])([a-z])/g, (_, p, c) => p + c.toUpperCase())
     })
     .join(' ')
