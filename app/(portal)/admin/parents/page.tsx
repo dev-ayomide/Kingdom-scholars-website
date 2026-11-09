@@ -8,7 +8,7 @@ import CsvImporter from '@/components/portal/CsvImporter'
 import ConfirmSubmit from '@/components/portal/ConfirmSubmit'
 import FilterTable from '@/components/portal/FilterTable'
 import { Container, Notice, PageHeader, Section, SelectField, SignedInMark, TextField } from '@/components/portal/kit'
-import { importParentRows, inviteAccount, linkParent, resendAllPending, resendInvite, unlinkParent } from '../actions'
+import { importParentRows, inviteAccount, linkParent, resendAllPending, resendInvite, unlinkParent, updateAccount } from '../actions'
 
 export const metadata: Metadata = {
   title: 'Parents',
@@ -159,6 +159,31 @@ export default async function ParentsPage() {
               <TextField id="p-name" name="fullName" label="Parent's full name" />
               <TextField id="p-email" name="email" type="email" label="Email address" hint="Check the spelling. The welcome email goes here." />
             </div>
+          </ActionForm>
+        </Section>
+
+        <Section
+          id="correct"
+          title="Correct a parent's name or email"
+          hint="Use this when a name or email address was typed wrongly. Their children stay connected. Leave a box empty to keep it as it is."
+        >
+          <ActionForm action={updateAccount} submitLabel="Save the correction">
+            <div className="max-w-xl">
+              <SelectField
+                id="u-who"
+                name="profileId"
+                label="Which parent?"
+                options={d.parents.map((p) => ({ value: p.id, label: `${titleCase(p.full_name)} · ${d.emailOf(p.id)}` }))}
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-5">
+              <TextField id="u-name" name="fullName" label="Correct name" required={false} hint="Optional" />
+              <TextField id="u-email" name="email" type="email" label="Correct email address" required={false} hint="Optional. Check the spelling carefully." />
+            </div>
+            <label className="flex items-start gap-3 text-[1.0625rem] cursor-pointer">
+              <input type="checkbox" name="resend" defaultChecked className="ks-check mt-0.5" />
+              <span>Send a welcome email to the new address now</span>
+            </label>
           </ActionForm>
         </Section>
 

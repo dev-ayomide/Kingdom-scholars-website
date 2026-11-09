@@ -303,3 +303,48 @@ export async function resendAllPending(_p: ActionState, _fd: FormData): Promise<
     ? { error: `${sent} sent, but ${failed.length} could not be sent: ${failed.slice(0, 5).join(', ')}${failed.length > 5 ? ' and more' : ''}.` }
     : { ok: `${sent} welcome email${sent === 1 ? ' was' : 's were'} sent.` }
 }
+
+// Fixes a typo in someone's email address or name. Their children and
+// connections stay exactly as they are.
+export async function updateAccount(_p: ActionState, fd: FormData): Promise<ActionState> {
+  await requireRole(['admin'])
+  const id = str(fd, 'profileId')
+  const fullName = str(fd, 'fullName')
+  const email = str(fd, 'email').toLowerCase()
+  const resend = fd.get('resend') === 'on'
+
+  if (!UUID.test(id)) return { error: 'Please choose a person.' }
+  if (!fullName && !email) return { error: 'Please type a new name or a new email address.' }
+  if (email && !EMAIL.test(email)) return { error: 'That email address does not look right. Please check it.' }
+
+  const service = createAdminClient()
+  const { data: profile } = await service.from('profiles').select('full_name').eq('id', id).single<{ full_name: string }>()
+  if (!profile) return { error: 'We cannot find this person.' }
+
+  if (email) {
+    const users = await listAuthUsers()
+    if (users.some((u) => u.email === email && u.id !== id)) {
+      return { error: 'That email address already belongs to someone else.' }
+    }
+    const { error } = await service.auth.admin.updateUserById(id, { email, email_confirm: true })
+    if (error) return { error: 'We could not change the email address. Please try again.' }
+  }
+  if (fullName) {
+    const { error } = await service.from('profiles').update({ full_name: fullName }).eq('id', id)
+    if (error) return { error: 'We could not change the name. Please try again.' }
+  }
+  revalidateTag(AUTH_USERS_TAG)
+
+  let note = ''
+  if (email) {
+    // Always make a fresh link, which cancels any link sent to the old address.
+    const mail = await buildAccountMail(email, fullName || profile.full_name, 'invite')
+    if (resend && mail) {
+      const { sent } = await sendMails([mail])
+      note = sent ? ` A welcome email was sent to ${email}.` : ' The welcome email could not be sent. Use "Send again" under Welcome emails.'
+    } else {
+      note = ' No email was sent. Use "Send again" under Welcome emails when you are ready.'
+    }
+  }
+  return { ok: `Saved.${note}` }
+}
