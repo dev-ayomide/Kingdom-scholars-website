@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { requireRole } from '@/lib/auth'
 import { loadAdminData } from '@/lib/admin-data'
 import { titleCase } from '@/lib/format'
+import { isLocalSite, siteUrl } from '@/lib/email'
 import PortalFrame from '@/components/portal/PortalFrame'
 import ActionForm from '@/components/portal/ActionForm'
 import CsvImporter from '@/components/portal/CsvImporter'
@@ -92,13 +93,22 @@ export default async function ParentsPage() {
             <Notice tone="ok" lead="Everyone has signed in.">Nobody needs a welcome email.</Notice>
           ) : (
             <div className="space-y-6">
+              {isLocalSite() ? (
+                <Notice tone="bad" lead="Do not send yet.">
+                  The website address in the settings is still a test address ({siteUrl()}), so the buttons in the emails would not work for parents.
+                </Notice>
+              ) : (
+                <Notice tone="info" lead="The button in each email will open:">
+                  <strong>{siteUrl()}</strong>
+                </Notice>
+              )}
               <Notice tone="warn" lead={`${waiting.length} ${waiting.length === 1 ? 'person has' : 'people have'} not signed in yet.`}>
                 Sending the emails cannot be taken back, and anyone who already had an older email will get a new one. The old link then stops working.
               </Notice>
               <ActionForm
                 action={resendAllPending}
                 submitLabel={`Send a welcome email to ${waiting.length} ${waiting.length === 1 ? 'person' : 'people'}`}
-                confirm={`This will send a welcome email to ${waiting.length} people right now. It cannot be taken back. Continue?`}
+                confirm={`This will send a welcome email to ${waiting.length} people right now. The button in each email opens ${siteUrl()}. It cannot be taken back. Continue?`}
               >
                 <span />
               </ActionForm>
