@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { buildAccountMail, createAccount, listAuthUsers } from '@/lib/accounts'
 import { sendMails, type Mail } from '@/lib/email'
 import { normaliseKey } from '@/lib/pdf'
+import { titleCase } from '@/lib/format'
 import { AUTH_USERS_TAG } from '@/lib/admin-data'
 import type { ActionState, ImportResult } from '@/lib/types'
 
@@ -347,4 +348,84 @@ export async function updateAccount(_p: ActionState, fd: FormData): Promise<Acti
     }
   }
   return { ok: `Saved.${note}` }
+}
+
+// One step: add a parent, connect them to a child, and (optionally) email them.
+// If the email already has a parent account, the child is simply connected to it.
+export async function addParent(_p: ActionState, fd: FormData): Promise<ActionState> {
+  await requireRole(['admin'])
+  const email = str(fd, 'email').toLowerCase()
+  const fullName = str(fd, 'fullName')
+  const studentId = str(fd, 'studentId')
+  const send = fd.get('send') === 'on'
+
+  if (!fullName || !EMAIL.test(email)) return { error: 'Please type a name and a correct email address.' }
+  if (!UUID.test(studentId)) return { error: 'Please choose which child this parent is for.' }
+
+  const service = createAdminClient()
+  const { data: child } = await service.from('students').select('id, full_name').eq('id', studentId).single<{ id: string; full_name: string }>()
+  if (!child) return { error: 'We cannot find that child.' }
+  const childName = titleCase(child.full_name)
+
+  const existing = (await listAuthUsers()).find((u) => u.email === email)
+  let parentId: string
+  let created = false
+  if (existing) {
+    const { data: profile } = await service.from('profiles').select('role').eq('id', existing.id).single<{ role: string }>()
+    if (profile && profile.role !== 'parent') return { error: 'That email address belongs to a staff account, so it cannot be used for a parent.' }
+    if (!profile) await service.from('profiles').insert({ id: existing.id, role: 'parent', full_name: fullName })
+    parentId = existing.id
+  } else {
+    const made = await createAccount(email, fullName, 'parent')
+    if ('error' in made) return { error: 'We could not add this parent. Please check the email address and try again.' }
+    parentId = made.id
+    created = true
+  }
+
+  const { error } = await service.from('parent_students').upsert({ parent_id: parentId, student_id: child.id })
+  if (error) return { error: 'The parent was added, but we could not connect them to the child. Please try "Connect a parent to a child".' }
+  revalidateTag(AUTH_USERS_TAG)
+
+  if (!created) return { ok: `That email address already had an account, so ${childName} was connected to it. No new email was needed.` }
+  let note = ' No email was sent yet. Use "Send again" under Welcome emails when you are ready.'
+  if (send) {
+    const mail = await buildAccountMail(email, fullName, 'invite')
+    const { sent } = mail ? await sendMails([mail]) : { sent: 0 }
+    note = sent ? ` A welcome email was sent to ${email}.` : ' The welcome email could not be sent. Use "Send again" under Welcome emails.'
+  }
+  return { ok: `${fullName} was added and connected to ${childName}.${note}` }
+}
+
+// Fixes a spelling mistake in a child's name or admission number.
+export async function updateStudent(_p: ActionState, fd: FormData): Promise<ActionState> {
+  await requireRole(['admin'])
+  const id = str(fd, 'studentId')
+  const fullName = str(fd, 'fullName')
+  const admission = str(fd, 'admissionNo')
+  if (!UUID.test(id)) return { error: 'Please choose a child.' }
+  if (!fullName && !admission) return { error: 'Please type the correct name or the correct admission number.' }
+
+  const service = createAdminClient()
+  const { data: old } = await service.from('students').select('full_name').eq('id', id).single<{ full_name: string }>()
+  if (!old) return { error: 'We cannot find that child.' }
+
+  const patch: Record<string, string> = {}
+  if (fullName) patch.full_name = fullName
+  if (admission) patch.admission_no = admission
+  const { error } = await service.from('students').update(patch).eq('id', id)
+  if (error) {
+    return { error: error.code === '23505' ? 'That admission number is already used by another child.' : 'We could not save the correction. Please try again.' }
+  }
+
+  // Parent accounts that were named after the old spelling follow the correction.
+  if (fullName) {
+    const { data: links } = await service.from('parent_students').select('parent_id').eq('student_id', id)
+    for (const l of links ?? []) {
+      const { data: p } = await service.from('profiles').select('id, full_name').eq('id', l.parent_id).single<{ id: string; full_name: string }>()
+      if (p && p.full_name.trim().toLowerCase() === `parent of ${old.full_name}`.toLowerCase()) {
+        await service.from('profiles').update({ full_name: `Parent of ${fullName}` }).eq('id', p.id)
+      }
+    }
+  }
+  return { ok: `Saved. ${titleCase(fullName || old.full_name)} has been corrected.` }
 }

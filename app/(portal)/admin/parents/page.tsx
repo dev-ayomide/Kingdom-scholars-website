@@ -9,7 +9,7 @@ import CsvImporter from '@/components/portal/CsvImporter'
 import ConfirmSubmit from '@/components/portal/ConfirmSubmit'
 import FilterTable from '@/components/portal/FilterTable'
 import { Container, Notice, PageHeader, Section, SelectField, SignedInMark, TextField } from '@/components/portal/kit'
-import { importParentRows, inviteAccount, linkParent, resendAllPending, resendInvite, unlinkParent, updateAccount } from '../actions'
+import { addParent, importParentRows, linkParent, resendAllPending, resendInvite, unlinkParent, updateAccount } from '../actions'
 
 export const metadata: Metadata = {
   title: 'Parents',
@@ -34,6 +34,10 @@ export default async function ParentsPage() {
   const waiting = d.profiles.filter((p) => !d.signedIn(p.id))
   const className = (id: string) => titleCase(d.classes.find((c) => c.id === id)?.name ?? '')
   const studentOptions = d.students.map((s) => ({ value: s.id, label: `${titleCase(s.full_name)} (${className(s.class_id)})` }))
+  const hasParent = new Set(d.parentStudents.map((l) => l.student_id))
+  const childChoices = [...d.students]
+    .sort((a, b) => Number(hasParent.has(a.id)) - Number(hasParent.has(b.id)))
+    .map((s) => ({ value: s.id, label: `${titleCase(s.full_name)} (${className(s.class_id)})${hasParent.has(s.id) ? '' : ' · no parent yet'}` }))
   const roleWord = (r: string) => (r === 'parent' ? 'Parent' : r === 'teacher' ? 'Teacher' : 'Administrator')
 
   return (
@@ -162,13 +166,23 @@ export default async function ParentsPage() {
           />
         </Section>
 
-        <Section id="one" title="Add one parent">
-          <ActionForm action={inviteAccount} submitLabel="Add this parent and send a welcome email">
-            <input type="hidden" name="role" value="parent" />
+        <Section
+          id="one"
+          title="Add a parent"
+          hint="One step: type the parent's name and email, and choose their child. Children who have no parent yet are shown first."
+        >
+          <ActionForm action={addParent} submitLabel="Add this parent">
             <div className="grid sm:grid-cols-2 gap-5">
               <TextField id="p-name" name="fullName" label="Parent's full name" />
               <TextField id="p-email" name="email" type="email" label="Email address" hint="Check the spelling. The welcome email goes here." />
             </div>
+            <div className="max-w-xl">
+              <SelectField id="p-child" name="studentId" label="Which child is this parent for?" options={childChoices} />
+            </div>
+            <label className="flex items-start gap-3 text-[1.0625rem] cursor-pointer">
+              <input type="checkbox" name="send" defaultChecked className="ks-check mt-0.5" />
+              <span>Send the welcome email now</span>
+            </label>
           </ActionForm>
         </Section>
 

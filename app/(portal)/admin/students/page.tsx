@@ -7,7 +7,7 @@ import ActionForm from '@/components/portal/ActionForm'
 import CsvImporter from '@/components/portal/CsvImporter'
 import FilterTable from '@/components/portal/FilterTable'
 import { Container, PageHeader, Section, SelectField, TextField } from '@/components/portal/kit'
-import { createClass, createStudent, importStudentRows, moveStudent } from '../actions'
+import { createClass, createStudent, importStudentRows, moveStudent, updateStudent } from '../actions'
 
 export const metadata: Metadata = {
   title: 'Children and classes',
@@ -86,6 +86,22 @@ export default async function StudentsPage() {
             </div>
             <div className="max-w-md">
               <SelectField id="child-class" name="classId" label="Class" options={classOptions} />
+            </div>
+          </ActionForm>
+        </Section>
+
+        <Section
+          id="correct"
+          title="Correct a child's name or admission number"
+          hint="Use this when a name was spelt wrongly. The child's class, parents and report sheets stay exactly as they are. Leave a box empty to keep it as it is."
+        >
+          <ActionForm action={updateStudent} submitLabel="Save the correction">
+            <div className="max-w-xl">
+              <SelectField id="fix-child" name="studentId" label="Which child?" options={studentOptions} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-5">
+              <TextField id="fix-name" name="fullName" label="Correct full name" required={false} hint="Type the whole name, spelt correctly" />
+              <TextField id="fix-adm" name="admissionNo" label="Correct admission number" required={false} hint="Optional" />
             </div>
           </ActionForm>
         </Section>
