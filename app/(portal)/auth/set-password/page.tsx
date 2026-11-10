@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { requireRole } from '@/lib/auth'
 import { titleCase } from '@/lib/format'
-import ActionForm, { inputClass, labelClass } from '@/components/portal/ActionForm'
 import PortalFrame from '@/components/portal/PortalFrame'
 import { PageHeader, Container } from '@/components/portal/kit'
-import { setPassword } from '../actions'
+import SetPasswordForm from './SetPasswordForm'
 
 export const metadata: Metadata = {
   title: 'Choose a password',
@@ -21,16 +20,7 @@ export default async function SetPasswordPage({ searchParams }: { searchParams: 
       />
       <Container className="py-8">
         <div className="ks-panel p-6 sm:p-7 max-w-xl">
-          <ActionForm action={setPassword} submitLabel="Save my password">
-            <div>
-              <label htmlFor="password" className={labelClass}>New password</label>
-              <input id="password" name="password" type="password" minLength={8} autoComplete="new-password" required className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="confirm" className={labelClass}>Type the same password again</label>
-              <input id="confirm" name="confirm" type="password" minLength={8} autoComplete="new-password" required className={inputClass} />
-            </div>
-          </ActionForm>
+          <SetPasswordForm />
         </div>
       </Container>
     </PortalFrame>
